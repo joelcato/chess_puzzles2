@@ -55,15 +55,15 @@ function App() {
     return () => unsubscribe();
   }, []);
 
-  // Reset to first puzzle when set or chapter changes
+  // When set or chapter changes, always go to puzzle 0
   useEffect(() => {
-    setCurrentProblemIndex(0);
-    setSelectedProblemIndex(0);
+    goToProblem(0);
   }, [activeSetIndex, activeChapterIndex]);
 
+  // When puzzle index changes via navigation (arrows, go button, auto-advance)
   useEffect(() => {
     goToProblem(currentProblemIndex);
-  }, [currentProblemIndex, activeSetIndex, activeChapterIndex]);
+  }, [currentProblemIndex]);
 
   // ── Core puzzle logic ──────────────────────────────────────────────────────
 
