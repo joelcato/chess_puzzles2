@@ -27,6 +27,7 @@
 .profile-selector-row {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 10px;
   width: auto;
 }
@@ -105,7 +106,7 @@
 }
 
 .reset-button {
-  background-color: #b71c1c;
+  background-color: #e53935;
   color: white;
   font-size: 13px;
   padding: 5px 12px;
@@ -114,7 +115,7 @@
 }
 
 .reset-button:hover {
-  background-color: #d32f2f;
+  background-color: #ef5350;
 }
 
 #reset-all-button {
