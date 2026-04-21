@@ -210,6 +210,8 @@ function App() {
     return (
       <ProfilePage
         userProgress={userProgress}
+        initialSetIndex={activeSetIndex}
+        initialChapterIndex={activeChapterIndex}
         onBack={() => setPage('puzzle')}
         onNavigate={(setIdx, chapterIdx, puzzleIdx) => {
           setActiveSetIndex(setIdx);
@@ -349,7 +351,7 @@ function App() {
       {/* Puzzle area */}
       <div id="puzzle-container">
         <div id="PuzzleNumberText">
-          <h2>Puzzle #{currentPuzzle?.puzzle_id}</h2>
+          <h2>Puzzle #{currentProblemIndex + 1}</h2>
         </div>
         <div id="ChessBoardContainer">
           <Chessboard
@@ -385,6 +387,16 @@ function App() {
         {/* Optional metadata (Lichess puzzles) */}
         {currentPuzzle?.game_url && (
           <div id="puzzle-metadata">
+            <span className="metadata-item">
+              ID:{' '}
+              <a
+                href={`https://lichess.org/training/${currentPuzzle.puzzle_id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {currentPuzzle.puzzle_id}
+              </a>
+            </span>
             {currentPuzzle.rating != null && (
               <span className="metadata-item">
                 Rating: {currentPuzzle.rating}

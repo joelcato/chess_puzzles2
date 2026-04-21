@@ -2,9 +2,9 @@ import { useState } from 'react';
 import puzzleSets from './assets/puzzleSets';
 import './ProfilePage.css';
 
-function ProfilePage({ userProgress, onBack, onNavigate }) {
-  const [profileSetIndex, setProfileSetIndex] = useState(0);
-  const [profileChapterIndex, setProfileChapterIndex] = useState(0);
+function ProfilePage({ userProgress, initialSetIndex, initialChapterIndex, onBack, onNavigate }) {
+  const [profileSetIndex, setProfileSetIndex] = useState(initialSetIndex ?? 0);
+  const [profileChapterIndex, setProfileChapterIndex] = useState(initialChapterIndex ?? 0);
 
   const activeSet = puzzleSets[profileSetIndex];
   const activeChapter = activeSet.chapters[profileChapterIndex];
