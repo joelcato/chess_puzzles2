@@ -21,13 +21,13 @@ const useAutoLogout = (timeout = 3600000) => {
 
     window.addEventListener('mousemove', handleActivity);
     window.addEventListener('keydown', handleActivity);
+    window.addEventListener('touchstart', handleActivity);
 
     resetTimer();
 
     return () => {
       window.removeEventListener('mousemove', handleActivity);
-      window.removeEventListener('keydown', handleActivity);
-      if (timerRef.current) {
+      window.removeEventListener('keydown', handleActivity);    window.removeEventListener('touchstart', handleActivity);      if (timerRef.current) {
         clearTimeout(timerRef.current);
       }
     };

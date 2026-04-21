@@ -1,10 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import './App.css';
 import { Chessboard } from 'react-chessboard';
 import { Chess } from 'chess.js';
-import puzzleSets from './assets/puzzleSets';
-import { db, auth, provider } from './firebase';
-import { doc, setDoc, getDoc } from 'firebase/firestore';
+import { auth, provider } from './firebase';
 import { signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
 import loadUserProgress from './utils/loadUserProgress';
 import saveUserProgress from './utils/saveUserProgress';
@@ -16,18 +14,32 @@ import ProfilePage from './ProfilePage';
 function App() {
   useAutoLogout(3600000); // 1 hour
 
+  // ── Puzzle sets (dynamically loaded) ───────────────────────────────────────
+  const [puzzleSets, setPuzzleSets] = useState([]);
+  const [setsLoading, setSetsLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([
+      import('./assets/polgar.json'),
+      import('./assets/lichess_mating_patterns.json'),
+    ]).then(([polgar, lichess]) => {
+      setPuzzleSets([polgar.default, lichess.default]);
+      setSetsLoading(false);
+    });
+  }, []);
+
   // ── Puzzle set & chapter selection ─────────────────────────────────────────
   const [activeSetIndex, setActiveSetIndex] = useState(0);
   const [activeChapterIndex, setActiveChapterIndex] = useState(0);
 
   const activeSet = puzzleSets[activeSetIndex];
-  const activeChapter = activeSet.chapters[activeChapterIndex];
-  const puzzlesInChapter = activeChapter.puzzles;
+  const activeChapter = activeSet?.chapters[activeChapterIndex];
+  const puzzlesInChapter = activeChapter?.puzzles ?? [];
   const numberOfPuzzles = puzzlesInChapter.length;
 
   // ── Puzzle navigation state ────────────────────────────────────────────────
   const [currentProblemIndex, setCurrentProblemIndex] = useState(0);
-  const [game, setGame] = useState(new Chess());
+  const gameRef = useRef(new Chess());
   const [gamePosition, setGamePosition] = useState('');
   const [boardOrientation, setBoardOrientation] = useState('white');
   const [correctMoves, setCorrectMoves] = useState([]);
@@ -39,85 +51,17 @@ function App() {
   // ── Auth & progress ────────────────────────────────────────────────────────
   const [user, setUser] = useState(null);
   const [userProgress, setUserProgress] = useState({});
+  const [isLoadingProgress, setIsLoadingProgress] = useState(false);
   // resumeTarget: when login sets a specific puzzle to land on after chapter change
   const [resumeTarget, setResumeTarget] = useState(null);
   // ── Page navigation ────────────────────────────────────────────────────────
   const [page, setPage] = useState('puzzle'); // 'puzzle' | 'profile'
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUser(user);
-        loadUserProgress(user.uid).then((progress) => {
-          setUserProgress(progress);
-
-          const resume = progress._resume;
-          if (resume) {
-            // Find the set and chapter indices from the saved resume
-            const setIdx = puzzleSets.findIndex((s) => s.id === resume.setId);
-            if (setIdx !== -1) {
-              const chapter = puzzleSets[setIdx].chapters[resume.chapterIndex];
-              if (chapter) {
-                const puzzleIdx = chapter.puzzles.findIndex(
-                  (p) => p.puzzle_id === resume.puzzleId
-                );
-                setActiveSetIndex(setIdx);
-                setActiveChapterIndex(resume.chapterIndex);
-                // goToProblem will fire via the chapter-change effect;
-                // store the target so that effect can use it
-                setResumeTarget(puzzleIdx !== -1 ? puzzleIdx : 0);
-                return;
-              }
-            }
-          }
-          // No resume state — jump to first unsolved in current chapter
-          const target = Math.max(0, firstUnsolvedIndex(activeSetIndex, activeChapterIndex, progress));
-          goToProblem(target);
-        });
-      } else {
-        setUser(null);
-        setUserProgress({});
-        goToProblem(0);
-      }
-    });
-    return () => unsubscribe();
-  }, []);
-
-  // Helper: find first unsolved puzzle index in a given set+chapter
-  function firstUnsolvedIndex(setIndex, chapterIndex, progress) {
-    const puzzles = puzzleSets[setIndex].chapters[chapterIndex].puzzles;
-    const setId = puzzleSets[setIndex].id;
-    const setProgress = progress[setId] || {};
-    return puzzles.findIndex((p) => !setProgress[p.puzzle_id]?.solved) ?? 0;
-  }
-
-  // When set or chapter changes, jump to resume target (if just logged in),
-  // first unsolved (if logged in), or puzzle 0 (if not logged in)
-  useEffect(() => {
-    let target = 0;
-    if (resumeTarget !== null) {
-      target = resumeTarget;
-      setResumeTarget(null);
-    } else if (user) {
-      target = Math.max(0, firstUnsolvedIndex(activeSetIndex, activeChapterIndex, userProgress));
-      // Save resume state when switching chapters
-      const puzzle = puzzleSets[activeSetIndex].chapters[activeChapterIndex].puzzles[target];
-      if (puzzle) {
-        saveResumeState(user.uid, puzzleSets[activeSetIndex].id, activeChapterIndex, puzzle.puzzle_id);
-      }
-    }
-    goToProblem(target);
-  }, [activeSetIndex, activeChapterIndex]);
-
-  // When puzzle index changes via navigation (arrows, go button, auto-advance)
-  useEffect(() => {
-    goToProblem(currentProblemIndex);
-  }, [currentProblemIndex]);
-
   // ── Core puzzle logic ──────────────────────────────────────────────────────
 
-  function goToProblem(index) {
-    const puzzles = puzzleSets[activeSetIndex].chapters[activeChapterIndex].puzzles;
+  const goToProblem = useCallback((index, sets = puzzleSets, setIdx = activeSetIndex, chapterIdx = activeChapterIndex) => {
+    const puzzles = sets[setIdx]?.chapters[chapterIdx]?.puzzles;
+    if (!puzzles) return;
     const problem = puzzles[index];
     if (!problem) return;
 
@@ -129,12 +73,107 @@ function App() {
     setCorrectMoveIndex(0);
 
     const newGame = new Chess(problem.fen);
+    gameRef.current = newGame;
     setGamePosition(newGame.fen());
-    setGame(newGame);
     setBoardOrientation(problem.fen.split(' ')[1] === 'b' ? 'black' : 'white');
     setPromptText(`${problem.first} — ${problem.type}`);
     setResultText('Make a Move');
-  }
+  }, [puzzleSets, activeSetIndex, activeChapterIndex]);
+
+  // Helper: find first unsolved puzzle index in a given set+chapter
+  const firstUnsolvedIndex = useCallback((setIndex, chapterIndex, progress, sets = puzzleSets) => {
+    const puzzles = sets[setIndex]?.chapters[chapterIndex]?.puzzles;
+    if (!puzzles) return 0;
+    const setId = sets[setIndex].id;
+    const setProgress = progress[setId] || {};
+    const idx = puzzles.findIndex((p) => !setProgress[p.puzzle_id]?.solved);
+    return idx === -1 ? 0 : idx;
+  }, [puzzleSets]);
+
+  // Auth listener — runs once
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+      if (firebaseUser) {
+        setUser(firebaseUser);
+        setIsLoadingProgress(true);
+        loadUserProgress(firebaseUser.uid).then((progress) => {
+          setUserProgress(progress);
+          setIsLoadingProgress(false);
+
+          const resume = progress._resume;
+          if (resume) {
+            import('./assets/puzzleSets.js').then(({ default: sets }) => {
+              const setIdx = sets.findIndex((s) => s.id === resume.setId);
+              if (setIdx !== -1) {
+                const chapter = sets[setIdx].chapters[resume.chapterIndex];
+                if (chapter) {
+                  const puzzleIdx = chapter.puzzles.findIndex(
+                    (p) => p.puzzle_id === resume.puzzleId
+                  );
+                  setActiveSetIndex(setIdx);
+                  setActiveChapterIndex(resume.chapterIndex);
+                  setResumeTarget(puzzleIdx !== -1 ? puzzleIdx : 0);
+                  return;
+                }
+              }
+              // Fallback: go to first unsolved in current chapter
+              setPuzzleSets((prevSets) => {
+                const target = firstUnsolvedIndex(activeSetIndex, activeChapterIndex, progress, prevSets);
+                goToProblem(target, prevSets, activeSetIndex, activeChapterIndex);
+                return prevSets;
+              });
+            });
+          } else {
+            // No resume state — go to first unsolved
+            setPuzzleSets((prevSets) => {
+              const target = firstUnsolvedIndex(activeSetIndex, activeChapterIndex, progress, prevSets);
+              goToProblem(target, prevSets, activeSetIndex, activeChapterIndex);
+              return prevSets;
+            });
+          }
+        });
+      } else {
+        setUser(null);
+        setUserProgress({});
+        goToProblem(0);
+      }
+    });
+    return () => unsubscribe();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // When puzzle sets finish loading: load puzzle 0
+  useEffect(() => {
+    if (!setsLoading) {
+      goToProblem(0, puzzleSets, activeSetIndex, activeChapterIndex);
+    }
+  }, [setsLoading]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // When set or chapter changes (user-initiated), jump to resume or first unsolved
+  const isFirstRender = useRef(true);
+  const skipChapterEffect = useRef(false);
+  useEffect(() => {
+    if (setsLoading) return;
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    if (skipChapterEffect.current) {
+      skipChapterEffect.current = false;
+      return;
+    }
+    let target = 0;
+    if (resumeTarget !== null) {
+      target = resumeTarget;
+      setResumeTarget(null);
+    } else if (user) {
+      target = firstUnsolvedIndex(activeSetIndex, activeChapterIndex, userProgress);
+      const puzzle = puzzleSets[activeSetIndex]?.chapters[activeChapterIndex]?.puzzles[target];
+      if (puzzle) {
+        saveResumeState(user.uid, puzzleSets[activeSetIndex].id, activeChapterIndex, puzzle.puzzle_id);
+      }
+    }
+    goToProblem(target);
+  }, [activeSetIndex, activeChapterIndex]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function onDrop(sourceSquare, targetSquare, piece) {
     const currentMove = correctMoves[correctMoveIndex];
@@ -151,7 +190,7 @@ function App() {
       targetSquare === to &&
       (!promotion || promotion === piece[1]?.toLowerCase())
     ) {
-      const move = game.move({
+      const move = gameRef.current.move({
         from: sourceSquare,
         to: targetSquare,
         promotion: promotion ?? piece[1]?.toLowerCase() ?? 'q',
@@ -159,33 +198,55 @@ function App() {
 
       if (move === null) return false;
 
-      setGamePosition(game.fen());
+      setGamePosition(gameRef.current.fen());
 
       const nextMoveIndex = correctMoveIndex + 1;
 
       if (nextMoveIndex >= correctMoves.length) {
-        setResultText('Puzzle Solved! Good job!');
         const puzzle = puzzlesInChapter[currentProblemIndex];
-        const nextIndex = (currentProblemIndex + 1) % numberOfPuzzles;
-        const nextPuzzle = puzzlesInChapter[nextIndex];
-        setTimeout(() => {
-          if (user) {
-            saveUserProgress(user.uid, activeSet.id, puzzle.puzzle_id);
-            // Update local progress state so chapter-switching uses fresh data
-            setUserProgress((prev) => ({
-              ...prev,
-              [activeSet.id]: {
-                ...(prev[activeSet.id] || {}),
-                [puzzle.puzzle_id]: { solved: true },
-              },
-            }));
-            // Update resume to the next puzzle
-            if (nextPuzzle) {
-              saveResumeState(user.uid, activeSet.id, activeChapterIndex, nextPuzzle.puzzle_id);
+        const isLastInChapter = currentProblemIndex === numberOfPuzzles - 1;
+        const nextIndex = currentProblemIndex + 1;
+
+        if (isLastInChapter) {
+          setResultText('Chapter complete! 🎉 Moving to the next chapter...');
+          setTimeout(() => {
+            if (user) {
+              saveUserProgress(user.uid, activeSet.id, puzzle.puzzle_id);
+              setUserProgress((prev) => ({
+                ...prev,
+                [activeSet.id]: {
+                  ...(prev[activeSet.id] || {}),
+                  [puzzle.puzzle_id]: { solved: true },
+                },
+              }));
             }
-          }
-          setCurrentProblemIndex(nextIndex);
-        }, 500);
+            const nextChapterIndex = activeChapterIndex + 1;
+            if (nextChapterIndex < activeSet.chapters.length) {
+              skipChapterEffect.current = true;
+              setActiveChapterIndex(nextChapterIndex);
+              goToProblem(0, puzzleSets, activeSetIndex, nextChapterIndex);
+            }
+          }, 1500);
+        } else {
+          setResultText('Puzzle Solved! Good job!');
+          const nextPuzzle = puzzlesInChapter[nextIndex];
+          setTimeout(() => {
+            if (user) {
+              saveUserProgress(user.uid, activeSet.id, puzzle.puzzle_id);
+              setUserProgress((prev) => ({
+                ...prev,
+                [activeSet.id]: {
+                  ...(prev[activeSet.id] || {}),
+                  [puzzle.puzzle_id]: { solved: true },
+                },
+              }));
+              if (nextPuzzle) {
+                saveResumeState(user.uid, activeSet.id, activeChapterIndex, nextPuzzle.puzzle_id);
+              }
+            }
+            goToProblem(nextIndex);
+          }, 500);
+        }
         return true;
       }
 
@@ -193,8 +254,8 @@ function App() {
 
       setTimeout(() => {
         const computerMove = correctMoves[nextMoveIndex];
-        game.move(computerMove);
-        setGamePosition(game.fen());
+        gameRef.current.move(computerMove);
+        setGamePosition(gameRef.current.fen());
         setCorrectMoveIndex(nextMoveIndex + 1);
       }, 300);
 
@@ -208,17 +269,23 @@ function App() {
   // ── Derived values for display ─────────────────────────────────────────────
   const currentPuzzle = puzzlesInChapter[currentProblemIndex];
 
+  if (setsLoading || isLoadingProgress) {
+    return <div className="app-container"><p>Loading...</p></div>;
+  }
+
   if (page === 'profile') {
     return (
       <ProfilePage
         userProgress={userProgress}
+        puzzleSets={puzzleSets}
         initialSetIndex={activeSetIndex}
         initialChapterIndex={activeChapterIndex}
         onBack={() => setPage('puzzle')}
         onNavigate={(setIdx, chapterIdx, puzzleIdx) => {
+          skipChapterEffect.current = true;
           setActiveSetIndex(setIdx);
           setActiveChapterIndex(chapterIdx);
-          setCurrentProblemIndex(puzzleIdx);
+          goToProblem(puzzleIdx, puzzleSets, setIdx, chapterIdx);
           setPage('puzzle');
         }}
       />
@@ -226,7 +293,7 @@ function App() {
   }
 
   return (
-    <div className='app-container'>
+    <div className="app-container">
 
       {/* Title */}
       <div id="main-header">
@@ -297,7 +364,7 @@ function App() {
           value={activeChapterIndex}
           onChange={(e) => setActiveChapterIndex(parseInt(e.target.value))}
         >
-          {activeSet.chapters.map((chapter, i) => (
+          {activeSet?.chapters.map((chapter, i) => (
             <option key={i} value={i}>
               {chapter.title}
             </option>
@@ -314,9 +381,7 @@ function App() {
           className="button"
           id="navigation-button-prev"
           onClick={() =>
-            setCurrentProblemIndex(
-              (currentProblemIndex - 1 + numberOfPuzzles) % numberOfPuzzles
-            )
+            goToProblem(Math.max(0, currentProblemIndex - 1))
           }
         >
           &#9664;
@@ -336,7 +401,7 @@ function App() {
           className="button"
           id="navigation-button-next"
           onClick={() =>
-            setCurrentProblemIndex((currentProblemIndex + 1) % numberOfPuzzles)
+            goToProblem(Math.min(numberOfPuzzles - 1, currentProblemIndex + 1))
           }
         >
           &#9654;
@@ -352,14 +417,14 @@ function App() {
 
       {/* Puzzle area */}
       <div id="puzzle-container">
-        <div id="PuzzleNumberText">
-          <h2>Puzzle #{currentProblemIndex + 1}</h2>
+        <div id="puzzle-number-text">
+          <h2>Puzzle #{isNaN(currentPuzzle?.puzzle_id) ? currentProblemIndex + 1 : currentPuzzle?.puzzle_id}</h2>
         </div>
-        <div id="PromptText">{promptText}</div>
-        <div id="ResultText">{resultText}</div>
-        <div id="ChessBoardContainer">
+        <div id="prompt-text">{promptText}</div>
+        <div id="result-text">{resultText}</div>
+        <div id="chess-board-container">
           <Chessboard
-            id="ChessBoard"
+            id="chess-board"
             position={gamePosition}
             onPieceDrop={onDrop}
             boardOrientation={boardOrientation}
@@ -373,13 +438,13 @@ function App() {
             }}
           />
         </div>
-        <div id="FEN-container">
-          <div id="FEN-Label">FEN:</div>
-          <div id="FEN-Text">{gamePosition}</div>
-          <div id="FEN-Copy-Button-container">
+        <div id="fen-container">
+          <div id="fen-label">FEN:</div>
+          <div id="fen-text">{gamePosition}</div>
+          <div id="fen-copy-button-container">
             <button
               className="button"
-              id="FEN-copy-button"
+              id="fen-copy-button"
               onClick={() => navigator.clipboard.writeText(gamePosition)}
             >
               Copy FEN

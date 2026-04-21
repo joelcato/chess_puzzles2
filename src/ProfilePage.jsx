@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import puzzleSets from './assets/puzzleSets';
 import './ProfilePage.css';
 
-function ProfilePage({ userProgress, initialSetIndex, initialChapterIndex, onBack, onNavigate }) {
+function ProfilePage({ userProgress, puzzleSets, initialSetIndex, initialChapterIndex, onBack, onNavigate }) {
   const [profileSetIndex, setProfileSetIndex] = useState(initialSetIndex ?? 0);
   const [profileChapterIndex, setProfileChapterIndex] = useState(initialChapterIndex ?? 0);
 
