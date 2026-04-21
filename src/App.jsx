@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import './App.css';
 import { Chessboard } from 'react-chessboard';
 import { Chess } from 'chess.js';
-import problems from './assets/problems.json';
+import puzzleSets from './assets/puzzleSets';
 import { db, auth, provider } from './firebase';
 import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
@@ -11,11 +11,19 @@ import saveUserProgress from './utils/saveUserProgress';
 import unpackSolution from './utils/unpackSolution';
 import useAutoLogout from './utils/useAutoLogout';
 
-const numberOfPuzzles = problems.problems.length;
-
 function App() {
-  useAutoLogout(3600000); // timeout in milliseconds (1 hour)
+  useAutoLogout(3600000); // 1 hour
 
+  // ── Puzzle set & chapter selection ─────────────────────────────────────────
+  const [activeSetIndex, setActiveSetIndex] = useState(0);
+  const [activeChapterIndex, setActiveChapterIndex] = useState(0);
+
+  const activeSet = puzzleSets[activeSetIndex];
+  const activeChapter = activeSet.chapters[activeChapterIndex];
+  const puzzlesInChapter = activeChapter.puzzles;
+  const numberOfPuzzles = puzzlesInChapter.length;
+
+  // ── Puzzle navigation state ────────────────────────────────────────────────
   const [currentProblemIndex, setCurrentProblemIndex] = useState(0);
   const [game, setGame] = useState(new Chess());
   const [gamePosition, setGamePosition] = useState('');
@@ -23,7 +31,9 @@ function App() {
   const [correctMoveIndex, setCorrectMoveIndex] = useState(0);
   const [promptText, setPromptText] = useState('');
   const [resultText, setResultText] = useState('');
-  const [selectedProblemID, setSelectedProblemID] = useState(0);
+  const [selectedProblemIndex, setSelectedProblemIndex] = useState(0);
+
+  // ── Auth ───────────────────────────────────────────────────────────────────
   const [user, setUser] = useState(null);
 
   useEffect(() => {
@@ -31,36 +41,49 @@ function App() {
       if (user) {
         setUser(user);
         loadUserProgress(user.uid).then((progress) => {
+          const setProgress = progress[activeSet.id] || {};
           const nextUnsolved = Array.from(
             { length: numberOfPuzzles },
-            (_, i) => i + 1
-          ).find((i) => !progress[i]?.solved);
-          setCurrentProblemIndex(nextUnsolved - 1 || 0);
+            (_, i) => i
+          ).find((i) => !setProgress[puzzlesInChapter[i].puzzle_id]?.solved);
+          setCurrentProblemIndex(nextUnsolved ?? 0);
         });
       } else {
         setUser(null);
       }
     });
-
     return () => unsubscribe();
   }, []);
 
+  // Reset to first puzzle when set or chapter changes
+  useEffect(() => {
+    setCurrentProblemIndex(0);
+    setSelectedProblemIndex(0);
+  }, [activeSetIndex, activeChapterIndex]);
+
   useEffect(() => {
     goToProblem(currentProblemIndex);
-  }, [currentProblemIndex]);
+  }, [currentProblemIndex, activeSetIndex, activeChapterIndex]);
 
-  function goToProblem(problemID) {
-    setCurrentProblemIndex(problemID);
-    const problem = problems.problems[problemID];
+  // ── Core puzzle logic ──────────────────────────────────────────────────────
+
+  function goToProblem(index) {
+    const puzzles = puzzleSets[activeSetIndex].chapters[activeChapterIndex].puzzles;
+    const problem = puzzles[index];
+    if (!problem) return;
+
+    setCurrentProblemIndex(index);
+    setSelectedProblemIndex(index);
+
     const newCorrectMoves = unpackSolution(problem.moves);
     setCorrectMoves(newCorrectMoves);
     setCorrectMoveIndex(0);
+
     const newGame = new Chess(problem.fen);
     setGamePosition(newGame.fen());
     setGame(newGame);
-    setPromptText(`${problem.first} and ${problem.type}`);
-    setResultText('Make a Move'); //to control the dropdown
-    setSelectedProblemID(problemID);
+    setPromptText(`${problem.first} — ${problem.type}`);
+    setResultText('Make a Move');
   }
 
   function onDrop(sourceSquare, targetSquare, piece) {
@@ -73,7 +96,6 @@ function App() {
 
     const { from, to, promotion } = currentMove;
 
-    // Check if the move being made is correct
     if (
       sourceSquare === from &&
       targetSquare === to &&
@@ -82,7 +104,7 @@ function App() {
       const move = game.move({
         from: sourceSquare,
         to: targetSquare,
-        promotion: piece[1]?.toLowerCase() ?? 'q',
+        promotion: promotion ?? piece[1]?.toLowerCase() ?? 'q',
       });
 
       if (move === null) return false;
@@ -93,9 +115,10 @@ function App() {
 
       if (nextMoveIndex >= correctMoves.length) {
         setResultText('Puzzle Solved! Good job!');
+        const puzzle = puzzlesInChapter[currentProblemIndex];
         setTimeout(() => {
           if (user) {
-            saveUserProgress(user.uid, currentProblemIndex + 1, true);
+            saveUserProgress(user.uid, activeSet.id, puzzle.puzzle_id);
           }
           setCurrentProblemIndex((currentProblemIndex + 1) % numberOfPuzzles);
         }, 500);
@@ -104,15 +127,13 @@ function App() {
 
       setResultText('Good Move!');
 
-      // computer makes the next move, if there is one
-      if (nextMoveIndex < correctMoves.length) {
-        setTimeout(() => {
-          const computerMove = correctMoves[nextMoveIndex];
-          game.move(computerMove);
-          setGamePosition(game.fen());
-          setCorrectMoveIndex(nextMoveIndex + 1);
-        }, 300);
-      }
+      setTimeout(() => {
+        const computerMove = correctMoves[nextMoveIndex];
+        game.move(computerMove);
+        setGamePosition(game.fen());
+        setCorrectMoveIndex(nextMoveIndex + 1);
+      }, 300);
+
       return true;
     } else {
       setResultText('Sorry. Incorrect :(');
@@ -120,11 +141,18 @@ function App() {
     }
   }
 
+  // ── Derived values for display ─────────────────────────────────────────────
+  const currentPuzzle = puzzlesInChapter[currentProblemIndex];
+
   return (
     <div className='app-container'>
+
+      {/* Title */}
       <div id="main-header">
         <h1>Chess Puzzles</h1>
       </div>
+
+      {/* Login */}
       <div id="login-container">
         {!user ? (
           <div>
@@ -139,19 +167,61 @@ function App() {
           </div>
         ) : (
           <div>
-            <button 
+            <button
               className="button"
-              id="logout-button" 
-              onClick={() => signOut(auth)}>
+              id="logout-button"
+              onClick={() => signOut(auth)}
+            >
               Log Out
             </button>
             <p id="login-status">Hi {user.displayName}. You are logged in.</p>
           </div>
         )}
       </div>
+
+      {/* Puzzle set selector */}
+      <div id="puzzle-set-select-container">
+        <label id="select-puzzle-set-text" htmlFor="puzzle-set-select">
+          Select puzzle set:
+        </label>
+        <select
+          id="puzzle-set-select"
+          value={activeSetIndex}
+          onChange={(e) => {
+            setActiveSetIndex(parseInt(e.target.value));
+            setActiveChapterIndex(0);
+          }}
+        >
+          {puzzleSets.map((set, i) => (
+            <option key={set.id} value={i}>
+              {set.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Chapter selector */}
+      <div id="chapter-select-container">
+        <label id="select-chapter-text" htmlFor="chapter-select">
+          Chapter:
+        </label>
+        <select
+          id="chapter-select"
+          value={activeChapterIndex}
+          onChange={(e) => setActiveChapterIndex(parseInt(e.target.value))}
+        >
+          {activeSet.chapters.map((chapter, i) => (
+            <option key={i} value={i}>
+              {chapter.title}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* Problem number selector */}
       <div id="problem-select-container">
         <label id="select-problem-text" htmlFor="problem-select">
-          Select problem number:{' '}
+          Select problem number:
         </label>
         <button
           className="button"
@@ -166,21 +236,15 @@ function App() {
         </button>
         <select
           id="problem-select"
-          value={selectedProblemID}
-          onChange={(e) => setSelectedProblemID(parseInt(e.target.value))}
+          value={selectedProblemIndex}
+          onChange={(e) => setSelectedProblemIndex(parseInt(e.target.value))}
         >
-          {Array.from({ length: numberOfPuzzles }, (_, index) => (
-            <option key={index} value={index}>
-              {index + 1}
+          {puzzlesInChapter.map((p, index) => (
+            <option key={p.puzzle_id} value={index}>
+              {isNaN(p.puzzle_id) ? index + 1 : p.puzzle_id}
             </option>
           ))}
         </select>
-        <button 
-          className="button"
-          id="go-button"
-          onClick={() => goToProblem(selectedProblemID)}>
-          Go
-        </button>
         <button
           className="button"
           id="navigation-button-next"
@@ -190,33 +254,19 @@ function App() {
         >
           &#9654;
         </button>
+        <button
+          className="button"
+          id="go-button"
+          onClick={() => goToProblem(selectedProblemIndex)}
+        >
+          Go
+        </button>
       </div>
-      <div id="problem-type-select-container">
-      <label id="select-problem-type-text" htmlFor="problem-type-select">
-        Or, select problem type:
-      </label>
-      <select
-        id="problem-type-select"
-        value={selectedProblemID}
-        onChange={(e) => setSelectedProblemID(parseInt(e.target.value))}
-      >
-        <option value="0">mates in one</option>
-        <option value="306">mates in two - white to move</option>
-        <option value="1254">mates in two - black to move</option>
-        <option value="3718">mates in three - white to move</option>
-        <option value="4138">mates in three - black to move</option>
-      </select>
-      <button
-        className="button"
-        id="go-type-button"
-        onClick={() => goToProblem(selectedProblemID)}
-      >
-        Go
-      </button>
-      </div>
+
+      {/* Puzzle area */}
       <div id="puzzle-container">
         <div id="PuzzleNumberText">
-          <h2>Puzzle #{problems.problems[currentProblemIndex].problemid}</h2>
+          <h2>Puzzle #{currentPuzzle?.puzzle_id}</h2>
         </div>
         <div id="ChessBoardContainer">
           <Chessboard
@@ -234,7 +284,7 @@ function App() {
           />
         </div>
         <div id="FEN-container">
-          <div id="FEN-Label">FEN: </div>
+          <div id="FEN-Label">FEN:</div>
           <div id="FEN-Text">{gamePosition}</div>
           <div id="FEN-Copy-Button-container">
             <button
@@ -248,6 +298,37 @@ function App() {
         </div>
         <div id="PromptText">{promptText}</div>
         <div id="ResultText">{resultText}</div>
+
+        {/* Optional metadata (Lichess puzzles) */}
+        {currentPuzzle?.game_url && (
+          <div id="puzzle-metadata">
+            {currentPuzzle.rating != null && (
+              <span className="metadata-item">
+                Rating: {currentPuzzle.rating}
+                {currentPuzzle.rating_deviation != null &&
+                  ` ±${currentPuzzle.rating_deviation}`}
+              </span>
+            )}
+            {currentPuzzle.popularity != null && (
+              <span className="metadata-item">
+                Popularity: {currentPuzzle.popularity}%
+              </span>
+            )}
+            {currentPuzzle.nb_plays != null && (
+              <span className="metadata-item">
+                Plays: {currentPuzzle.nb_plays.toLocaleString()}
+              </span>
+            )}
+            <a
+              className="metadata-item"
+              href={currentPuzzle.game_url}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View game on Lichess ↗
+            </a>
+          </div>
+        )}
       </div>
     </div>
   );

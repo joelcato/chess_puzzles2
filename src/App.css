@@ -20,7 +20,8 @@ html, body {
 /* Style for buttons */
 .button,
 #problem-select,
-#problem-type-select {
+#puzzle-set-select,
+#chapter-select {
   padding: 8px;
   margin: 3px;
   border: 1px solid #ddd;
@@ -35,16 +36,26 @@ html, body {
 }
 
 /* Set minimum and maximum width for dropdown */
-#problem-select,
-#problem-type-select {
+#problem-select {
   min-width: 70px; /* Ensure it can fit the text */
   max-width: 100px; /* Adjust this value as needed */
+}
+
+#puzzle-set-select {
+  min-width: 120px;
+  max-width: 260px;
+}
+
+#chapter-select {
+  min-width: 120px;
+  max-width: 320px;
 }
 
 /* Hover effect for buttons */
 .button:hover,
 #problem-select:hover,
-#problem-type-select:hover {
+#puzzle-set-select:hover,
+#chapter-select:hover {
   background-color: #f0f0f0;
 }
 
@@ -63,7 +74,8 @@ html, body {
 }
 
 #problem-select-container,
-#problem-type-select-container {
+#chapter-select-container,
+#puzzle-set-select-container {
   display: flex;
   align-items: center;
   justify-content: flex-start; /* Left align items */
@@ -75,9 +87,12 @@ html, body {
 #problem-select-container label,
 #problem-select-container button,
 #problem-select-container select,
-#problem-type-select-container label,
-#problem-type-select-container button,
-#problem-type-select-container select {
+#chapter-select-container label,
+#chapter-select-container button,
+#chapter-select-container select,
+#puzzle-set-select-container label,
+#puzzle-set-select-container button,
+#puzzle-set-select-container select {
   flex-grow: 0;
   flex-shrink: 1;
   margin: 3px;
@@ -85,14 +100,16 @@ html, body {
 }
 
 #problem-select-container label,
-#problem-type-select-container label {
+#chapter-select-container label,
+#puzzle-set-select-container label {
   flex-grow: 0;
   margin-right: 10px;
   font-size: 16px;
 }
 
 #select-problem-text,
-#select-problem-type-text {
+#select-chapter-text,
+#select-puzzle-set-text {
   margin-left: 10px;
   font-size: 16px;
   color: #333;
@@ -162,4 +179,28 @@ html, body {
   .navigation-button {
     font-size: 2vw; /* Adjust this value as needed */
   }
+}
+
+/* Puzzle metadata (Lichess extra info) */
+#puzzle-metadata {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+  font-size: 13px;
+  color: #555;
+}
+
+#puzzle-metadata .metadata-item {
+  white-space: nowrap;
+}
+
+#puzzle-metadata a.metadata-item {
+  color: #0070f3;
+  text-decoration: none;
+}
+
+#puzzle-metadata a.metadata-item:hover {
+  text-decoration: underline;
 }
