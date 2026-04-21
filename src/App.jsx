@@ -303,6 +303,16 @@ function App() {
             }));
           }
         }}
+        onMarkPuzzles={(setId, puzzleIds) => {
+          if (user) {
+            saveUserProgress(user.uid, setId, puzzleIds);
+            setUserProgress((prev) => {
+              const updated = { ...(prev[setId] || {}) };
+              for (const id of puzzleIds) updated[id] = { solved: true };
+              return { ...prev, [setId]: updated };
+            });
+          }
+        }}
         onUnmarkPuzzle={(setId, puzzleId) => {
           if (user) {
             deleteUserProgress(user.uid, setId, puzzleId);

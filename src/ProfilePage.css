@@ -118,6 +118,19 @@
   background-color: #ef5350;
 }
 
+.mark-done-button {
+  background-color: #4caf50;
+  color: white;
+  font-size: 13px;
+  padding: 5px 12px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.mark-done-button:hover {
+  background-color: #66bb6a;
+}
+
 #reset-all-button {
   margin-bottom: 4px;
 }

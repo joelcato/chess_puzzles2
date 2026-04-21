@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import './ProfilePage.css';
 
-function ProfilePage({ userProgress, puzzleSets, initialSetIndex, initialChapterIndex, onBack, onNavigate, onMarkPuzzle, onUnmarkPuzzle, onResetChapter, onResetSet, onResetAll }) {
+function ProfilePage({ userProgress, puzzleSets, initialSetIndex, initialChapterIndex, onBack, onNavigate, onMarkPuzzle, onMarkPuzzles, onUnmarkPuzzle, onResetChapter, onResetSet, onResetAll }) {
   const [profileSetIndex, setProfileSetIndex] = useState(initialSetIndex ?? 0);
   const [profileChapterIndex, setProfileChapterIndex] = useState(initialChapterIndex ?? 0);
   const [contextMenu, setContextMenu] = useState(null); // { x, y, puzzle }
@@ -38,6 +38,29 @@ function ProfilePage({ userProgress, puzzleSets, initialSetIndex, initialChapter
       onMarkPuzzle(activeSet.id, contextMenu.puzzle.puzzle_id);
     }
     setContextMenu(null);
+  }
+
+  function handleMarkChapterDoneToHere() {
+    if (!contextMenu) return;
+    const idx = puzzles.findIndex((p) => p.puzzle_id === contextMenu.puzzle.puzzle_id);
+    const before = puzzles.slice(0, idx + 1).map((p) => p.puzzle_id);
+    const after = puzzles.slice(idx + 1).map((p) => p.puzzle_id);
+    onMarkPuzzles(activeSet.id, before);
+    if (after.length > 0) onResetChapter(activeSet.id, after);
+    setContextMenu(null);
+  }
+
+  function handleMarkChapterDone() {
+    if (window.confirm(`Mark all puzzles in "${activeChapter.title}" as done?`)) {
+      onMarkPuzzles(activeSet.id, puzzles.map((p) => p.puzzle_id));
+    }
+  }
+
+  function handleMarkSetDone() {
+    if (window.confirm(`Mark all puzzles in "${activeSet.name}" as done?`)) {
+      const allIds = activeSet.chapters.flatMap((ch) => ch.puzzles.map((p) => p.puzzle_id));
+      onMarkPuzzles(activeSet.id, allIds);
+    }
   }
 
   function handleResetChapter() {
@@ -88,6 +111,9 @@ function ProfilePage({ userProgress, puzzleSets, initialSetIndex, initialChapter
               <option key={set.id} value={i}>{set.name}</option>
             ))}
           </select>
+          <button className="button mark-done-button" onClick={handleMarkSetDone}>
+            Mark set done
+          </button>
           <button className="button reset-button" onClick={handleResetSet}>
             Reset puzzle set
           </button>
@@ -103,6 +129,9 @@ function ProfilePage({ userProgress, puzzleSets, initialSetIndex, initialChapter
               <option key={i} value={i}>{chapter.title}</option>
             ))}
           </select>
+          <button className="button mark-done-button" onClick={handleMarkChapterDone}>
+            Mark chapter done
+          </button>
           <button className="button reset-button" onClick={handleResetChapter}>
             Reset chapter
           </button>
@@ -138,6 +167,9 @@ function ProfilePage({ userProgress, puzzleSets, initialSetIndex, initialChapter
         >
           <button className="context-menu-item" onClick={handleToggleDone}>
             {contextMenu.solved ? 'Mark as not done' : 'Mark as done'}
+          </button>
+          <button className="context-menu-item" onClick={handleMarkChapterDoneToHere}>
+            Mark chapter done to here
           </button>
         </div>
       )}
