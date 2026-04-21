@@ -353,6 +353,8 @@ function App() {
         <div id="PuzzleNumberText">
           <h2>Puzzle #{currentProblemIndex + 1}</h2>
         </div>
+        <div id="PromptText">{promptText}</div>
+        <div id="ResultText">{resultText}</div>
         <div id="ChessBoardContainer">
           <Chessboard
             id="ChessBoard"
@@ -377,12 +379,10 @@ function App() {
               id="FEN-copy-button"
               onClick={() => navigator.clipboard.writeText(gamePosition)}
             >
-              Copy
+              Copy FEN
             </button>
           </div>
         </div>
-        <div id="PromptText">{promptText}</div>
-        <div id="ResultText">{resultText}</div>
 
         {/* Optional metadata (Lichess puzzles) */}
         {currentPuzzle?.game_url && (
