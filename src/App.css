@@ -181,6 +181,21 @@ html, body {
   }
 }
 
+/* Clickable username link to profile */
+.profile-link {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #0070f3;
+  cursor: pointer;
+  font-size: inherit;
+  text-decoration: underline;
+}
+
+.profile-link:hover {
+  color: #0051a8;
+}
+
 /* Puzzle metadata (Lichess extra info) */
 #puzzle-metadata {
   display: flex;

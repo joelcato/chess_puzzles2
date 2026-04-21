@@ -1,0 +1,103 @@
+.profile-container {
+  padding: 2rem;
+  box-sizing: border-box;
+  max-width: 900px;
+}
+
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 1.5rem;
+}
+
+.profile-header h1 {
+  margin: 0;
+}
+
+.profile-selectors {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 1rem;
+}
+
+.profile-selector-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.profile-selector-row label {
+  font-size: 16px;
+  min-width: 100px;
+}
+
+#profile-set-select,
+#profile-chapter-select {
+  padding: 6px 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  min-width: 200px;
+  max-width: 400px;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.profile-summary {
+  font-size: 15px;
+  color: #555;
+  margin-bottom: 1rem;
+}
+
+.progress-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.progress-box {
+  width: 36px;
+  height: 36px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.progress-box:hover {
+  opacity: 0.8;
+  outline: 2px solid #333;
+}
+
+.progress-box.solved {
+  background-color: #4caf50;
+}
+
+.progress-box.unsolved {
+  background-color: #e53935;
+}
+
+.progress-box-label {
+  text-overflow: clip;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 100%;
+  text-align: center;
+}
+
+@media (max-width: 600px) {
+  .progress-box {
+    width: 28px;
+    height: 28px;
+    font-size: 7px;
+  }
+}

@@ -11,6 +11,7 @@ import saveUserProgress from './utils/saveUserProgress';
 import saveResumeState from './utils/saveResumeState';
 import unpackSolution from './utils/unpackSolution';
 import useAutoLogout from './utils/useAutoLogout';
+import ProfilePage from './ProfilePage';
 
 function App() {
   useAutoLogout(3600000); // 1 hour
@@ -39,6 +40,8 @@ function App() {
   const [userProgress, setUserProgress] = useState({});
   // resumeTarget: when login sets a specific puzzle to land on after chapter change
   const [resumeTarget, setResumeTarget] = useState(null);
+  // ── Page navigation ────────────────────────────────────────────────────────
+  const [page, setPage] = useState('puzzle'); // 'puzzle' | 'profile'
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -203,6 +206,21 @@ function App() {
   // ── Derived values for display ─────────────────────────────────────────────
   const currentPuzzle = puzzlesInChapter[currentProblemIndex];
 
+  if (page === 'profile') {
+    return (
+      <ProfilePage
+        userProgress={userProgress}
+        onBack={() => setPage('puzzle')}
+        onNavigate={(setIdx, chapterIdx, puzzleIdx) => {
+          setActiveSetIndex(setIdx);
+          setActiveChapterIndex(chapterIdx);
+          setCurrentProblemIndex(puzzleIdx);
+          setPage('puzzle');
+        }}
+      />
+    );
+  }
+
   return (
     <div className='app-container'>
 
@@ -233,7 +251,13 @@ function App() {
             >
               Log Out
             </button>
-            <p id="login-status">Hi {user.displayName}. You are logged in.</p>
+            <p id="login-status">
+              Hi{' '}
+              <button className="profile-link" onClick={() => setPage('profile')}>
+                {user.displayName}
+              </button>
+              . You are logged in.
+            </p>
           </div>
         )}
       </div>
