@@ -7,6 +7,7 @@ import { signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
 import loadUserProgress from './utils/loadUserProgress';
 import saveUserProgress from './utils/saveUserProgress';
 import saveResumeState from './utils/saveResumeState';
+import deleteUserProgress from './utils/deleteUserProgress';
 import unpackSolution from './utils/unpackSolution';
 import useAutoLogout from './utils/useAutoLogout';
 import ProfilePage from './ProfilePage';
@@ -152,11 +153,11 @@ function App() {
   const isFirstRender = useRef(true);
   const skipChapterEffect = useRef(false);
   useEffect(() => {
-    if (setsLoading) return;
     if (isFirstRender.current) {
       isFirstRender.current = false;
       return;
     }
+    if (setsLoading) return;
     if (skipChapterEffect.current) {
       skipChapterEffect.current = false;
       return;
@@ -287,6 +288,57 @@ function App() {
           setActiveChapterIndex(chapterIdx);
           goToProblem(puzzleIdx, puzzleSets, setIdx, chapterIdx);
           setPage('puzzle');
+        }}
+        onMarkPuzzle={(setId, puzzleId) => {
+          if (user) {
+            saveUserProgress(user.uid, setId, puzzleId);
+            setUserProgress((prev) => ({
+              ...prev,
+              [setId]: { ...(prev[setId] || {}), [puzzleId]: { solved: true } },
+            }));
+          }
+        }}
+        onUnmarkPuzzle={(setId, puzzleId) => {
+          if (user) {
+            deleteUserProgress(user.uid, setId, puzzleId);
+            setUserProgress((prev) => {
+              const updated = { ...prev, [setId]: { ...(prev[setId] || {}) } };
+              delete updated[setId][puzzleId];
+              return updated;
+            });
+          }
+        }}
+        onResetChapter={(setId, puzzleIds) => {
+          if (user) {
+            deleteUserProgress(user.uid, setId, puzzleIds);
+            setUserProgress((prev) => {
+              const updated = { ...prev, [setId]: { ...(prev[setId] || {}) } };
+              for (const id of puzzleIds) delete updated[setId][id];
+              return updated;
+            });
+          }
+        }}
+        onResetSet={(setId) => {
+          if (user) {
+            deleteUserProgress(user.uid, setId);
+            setUserProgress((prev) => {
+              const updated = { ...prev };
+              delete updated[setId];
+              return updated;
+            });
+          }
+        }}
+        onResetAll={() => {
+          if (user) {
+            Promise.all(
+              puzzleSets.map((s) => deleteUserProgress(user.uid, s.id))
+            );
+            setUserProgress((prev) => {
+              const updated = { ...prev };
+              for (const s of puzzleSets) delete updated[s.id];
+              return updated;
+            });
+          }
         }}
       />
     );

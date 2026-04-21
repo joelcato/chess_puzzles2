@@ -215,11 +215,13 @@ html, body {
   white-space: nowrap;
 }
 
-#puzzle-metadata a.metadata-item {
+#puzzle-metadata a.metadata-item,
+#puzzle-metadata .metadata-item a {
   color: #0070f3;
   text-decoration: none;
 }
 
-#puzzle-metadata a.metadata-item:hover {
+#puzzle-metadata a.metadata-item:hover,
+#puzzle-metadata .metadata-item a:hover {
   text-decoration: underline;
 }

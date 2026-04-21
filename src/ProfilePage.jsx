@@ -1,9 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import './ProfilePage.css';
 
-function ProfilePage({ userProgress, puzzleSets, initialSetIndex, initialChapterIndex, onBack, onNavigate }) {
+function ProfilePage({ userProgress, puzzleSets, initialSetIndex, initialChapterIndex, onBack, onNavigate, onMarkPuzzle, onUnmarkPuzzle, onResetChapter, onResetSet, onResetAll }) {
   const [profileSetIndex, setProfileSetIndex] = useState(initialSetIndex ?? 0);
   const [profileChapterIndex, setProfileChapterIndex] = useState(initialChapterIndex ?? 0);
+  const [contextMenu, setContextMenu] = useState(null); // { x, y, puzzle }
+  const contextMenuRef = useRef(null);
 
   const activeSet = puzzleSets[profileSetIndex];
   const activeChapter = activeSet.chapters[profileChapterIndex];
@@ -11,6 +13,51 @@ function ProfilePage({ userProgress, puzzleSets, initialSetIndex, initialChapter
   const setProgress = userProgress[activeSet.id] || {};
 
   const solvedCount = puzzles.filter((p) => setProgress[p.puzzle_id]?.solved).length;
+
+  // Dismiss context menu on outside click
+  useEffect(() => {
+    const handleMouseDown = (e) => {
+      if (contextMenuRef.current && !contextMenuRef.current.contains(e.target)) {
+        setContextMenu(null);
+      }
+    };
+    document.addEventListener('mousedown', handleMouseDown);
+    return () => document.removeEventListener('mousedown', handleMouseDown);
+  }, []);
+
+  function handleContextMenu(e, puzzle, solved) {
+    e.preventDefault();
+    setContextMenu({ x: e.clientX, y: e.clientY, puzzle, solved });
+  }
+
+  function handleToggleDone() {
+    if (!contextMenu) return;
+    if (contextMenu.solved) {
+      onUnmarkPuzzle(activeSet.id, contextMenu.puzzle.puzzle_id);
+    } else {
+      onMarkPuzzle(activeSet.id, contextMenu.puzzle.puzzle_id);
+    }
+    setContextMenu(null);
+  }
+
+  function handleResetChapter() {
+    if (window.confirm(`Reset all progress for "${activeChapter.title}"?`)) {
+      const puzzleIds = puzzles.map((p) => p.puzzle_id);
+      onResetChapter(activeSet.id, puzzleIds);
+    }
+  }
+
+  function handleResetSet() {
+    if (window.confirm(`Reset all progress for "${activeSet.name}"?`)) {
+      onResetSet(activeSet.id);
+    }
+  }
+
+  function handleResetAll() {
+    if (window.confirm('Reset ALL progress across every puzzle set?')) {
+      onResetAll();
+    }
+  }
 
   return (
     <div className="profile-container">
@@ -22,6 +69,11 @@ function ProfilePage({ userProgress, puzzleSets, initialSetIndex, initialChapter
       </div>
 
       <div className="profile-selectors">
+        <div className="profile-selector-row">
+          <button className="button reset-button" id="reset-all-button" onClick={handleResetAll}>
+            Reset all progress
+          </button>
+        </div>
         <div className="profile-selector-row">
           <label htmlFor="profile-set-select">Puzzle set:</label>
           <select
@@ -36,6 +88,9 @@ function ProfilePage({ userProgress, puzzleSets, initialSetIndex, initialChapter
               <option key={set.id} value={i}>{set.name}</option>
             ))}
           </select>
+          <button className="button reset-button" onClick={handleResetSet}>
+            Reset puzzle set
+          </button>
         </div>
         <div className="profile-selector-row">
           <label htmlFor="profile-chapter-select">Chapter:</label>
@@ -48,6 +103,9 @@ function ProfilePage({ userProgress, puzzleSets, initialSetIndex, initialChapter
               <option key={i} value={i}>{chapter.title}</option>
             ))}
           </select>
+          <button className="button reset-button" onClick={handleResetChapter}>
+            Reset chapter
+          </button>
         </div>
       </div>
 
@@ -62,14 +120,27 @@ function ProfilePage({ userProgress, puzzleSets, initialSetIndex, initialChapter
             <div
               key={p.puzzle_id}
               className={`progress-box ${solved ? 'solved' : 'unsolved'}`}
-              title={`Puzzle ${p.puzzle_id}`}
+              title={`Puzzle ${isNaN(p.puzzle_id) ? index + 1 : p.puzzle_id}`}
               onClick={() => onNavigate(profileSetIndex, profileChapterIndex, index)}
+              onContextMenu={(e) => handleContextMenu(e, p, solved)}
             >
               <span className="progress-box-label">{index + 1}</span>
             </div>
           );
         })}
       </div>
+
+      {contextMenu && (
+        <div
+          ref={contextMenuRef}
+          className="context-menu"
+          style={{ top: contextMenu.y, left: contextMenu.x }}
+        >
+          <button className="context-menu-item" onClick={handleToggleDone}>
+            {contextMenu.solved ? 'Mark as not done' : 'Mark as done'}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

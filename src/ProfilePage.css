@@ -19,6 +19,7 @@
 .profile-selectors {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: 10px;
   margin-bottom: 1rem;
 }
@@ -27,6 +28,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  width: auto;
 }
 
 .profile-selector-row label {
@@ -101,3 +103,49 @@
     font-size: 7px;
   }
 }
+
+.reset-button {
+  background-color: #b71c1c;
+  color: white;
+  font-size: 13px;
+  padding: 5px 12px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.reset-button:hover {
+  background-color: #d32f2f;
+}
+
+#reset-all-button {
+  margin-bottom: 4px;
+}
+
+/* Context menu */
+.context-menu {
+  position: fixed;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  min-width: 160px;
+  padding: 4px 0;
+}
+
+.context-menu-item {
+  display: block;
+  width: 100%;
+  padding: 8px 14px;
+  background: none;
+  border: none;
+  text-align: left;
+  font-size: 14px;
+  cursor: pointer;
+  color: #333;
+}
+
+.context-menu-item:hover {
+  background-color: #f0f0f0;
+}
+
