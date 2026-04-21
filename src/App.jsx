@@ -142,14 +142,21 @@ function App() {
     return () => unsubscribe();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // When puzzle sets finish loading: load puzzle 0
+  // When puzzle sets finish loading: load puzzle 0 (only if no resume is pending)
   useEffect(() => {
-    if (!setsLoading) {
+    if (!setsLoading && resumeTarget === null) {
       goToProblem(0, puzzleSets, activeSetIndex, activeChapterIndex);
     }
   }, [setsLoading]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // When set or chapter changes (user-initiated), jump to resume or first unsolved
+  // Navigate to resume target once both sets are loaded and target is known
+  useEffect(() => {
+    if (setsLoading || resumeTarget === null) return;
+    goToProblem(resumeTarget, puzzleSets, activeSetIndex, activeChapterIndex);
+    setResumeTarget(null);
+  }, [resumeTarget, setsLoading]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // When set or chapter changes (user-initiated), jump to first unsolved
   const isFirstRender = useRef(true);
   const skipChapterEffect = useRef(false);
   useEffect(() => {
@@ -162,11 +169,9 @@ function App() {
       skipChapterEffect.current = false;
       return;
     }
+    if (resumeTarget !== null) return; // resumeTarget effect will handle navigation
     let target = 0;
-    if (resumeTarget !== null) {
-      target = resumeTarget;
-      setResumeTarget(null);
-    } else if (user) {
+    if (user) {
       target = firstUnsolvedIndex(activeSetIndex, activeChapterIndex, userProgress);
       const puzzle = puzzleSets[activeSetIndex]?.chapters[activeChapterIndex]?.puzzles[target];
       if (puzzle) {
