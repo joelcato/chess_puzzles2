@@ -29,6 +29,7 @@ function App() {
   const [currentProblemIndex, setCurrentProblemIndex] = useState(0);
   const [game, setGame] = useState(new Chess());
   const [gamePosition, setGamePosition] = useState('');
+  const [boardOrientation, setBoardOrientation] = useState('white');
   const [correctMoves, setCorrectMoves] = useState([]);
   const [correctMoveIndex, setCorrectMoveIndex] = useState(0);
   const [promptText, setPromptText] = useState('');
@@ -130,6 +131,7 @@ function App() {
     const newGame = new Chess(problem.fen);
     setGamePosition(newGame.fen());
     setGame(newGame);
+    setBoardOrientation(problem.fen.split(' ')[1] === 'b' ? 'black' : 'white');
     setPromptText(`${problem.first} — ${problem.type}`);
     setResultText('Make a Move');
   }
@@ -360,6 +362,7 @@ function App() {
             id="ChessBoard"
             position={gamePosition}
             onPieceDrop={onDrop}
+            boardOrientation={boardOrientation}
             customBoardStyle={{
               borderRadius: '4px',
               boxShadow: '0 2px 10px rgba(0, 0, 0, 0.5)',
