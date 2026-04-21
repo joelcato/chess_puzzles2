@@ -8,6 +8,7 @@ import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { signInWithPopup, signOut, onAuthStateChanged } from 'firebase/auth';
 import loadUserProgress from './utils/loadUserProgress';
 import saveUserProgress from './utils/saveUserProgress';
+import saveResumeState from './utils/saveResumeState';
 import unpackSolution from './utils/unpackSolution';
 import useAutoLogout from './utils/useAutoLogout';
 
@@ -33,31 +34,75 @@ function App() {
   const [resultText, setResultText] = useState('');
   const [selectedProblemIndex, setSelectedProblemIndex] = useState(0);
 
-  // ── Auth ───────────────────────────────────────────────────────────────────
+  // ── Auth & progress ────────────────────────────────────────────────────────
   const [user, setUser] = useState(null);
+  const [userProgress, setUserProgress] = useState({});
+  // resumeTarget: when login sets a specific puzzle to land on after chapter change
+  const [resumeTarget, setResumeTarget] = useState(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         setUser(user);
         loadUserProgress(user.uid).then((progress) => {
-          const setProgress = progress[activeSet.id] || {};
-          const nextUnsolved = Array.from(
-            { length: numberOfPuzzles },
-            (_, i) => i
-          ).find((i) => !setProgress[puzzlesInChapter[i].puzzle_id]?.solved);
-          setCurrentProblemIndex(nextUnsolved ?? 0);
+          setUserProgress(progress);
+
+          const resume = progress._resume;
+          if (resume) {
+            // Find the set and chapter indices from the saved resume
+            const setIdx = puzzleSets.findIndex((s) => s.id === resume.setId);
+            if (setIdx !== -1) {
+              const chapter = puzzleSets[setIdx].chapters[resume.chapterIndex];
+              if (chapter) {
+                const puzzleIdx = chapter.puzzles.findIndex(
+                  (p) => p.puzzle_id === resume.puzzleId
+                );
+                setActiveSetIndex(setIdx);
+                setActiveChapterIndex(resume.chapterIndex);
+                // goToProblem will fire via the chapter-change effect;
+                // store the target so that effect can use it
+                setResumeTarget(puzzleIdx !== -1 ? puzzleIdx : 0);
+                return;
+              }
+            }
+          }
+          // No resume state — jump to first unsolved in current chapter
+          const target = Math.max(0, firstUnsolvedIndex(activeSetIndex, activeChapterIndex, progress));
+          goToProblem(target);
         });
       } else {
         setUser(null);
+        setUserProgress({});
+        goToProblem(0);
       }
     });
     return () => unsubscribe();
   }, []);
 
-  // When set or chapter changes, always go to puzzle 0
+  // Helper: find first unsolved puzzle index in a given set+chapter
+  function firstUnsolvedIndex(setIndex, chapterIndex, progress) {
+    const puzzles = puzzleSets[setIndex].chapters[chapterIndex].puzzles;
+    const setId = puzzleSets[setIndex].id;
+    const setProgress = progress[setId] || {};
+    return puzzles.findIndex((p) => !setProgress[p.puzzle_id]?.solved) ?? 0;
+  }
+
+  // When set or chapter changes, jump to resume target (if just logged in),
+  // first unsolved (if logged in), or puzzle 0 (if not logged in)
   useEffect(() => {
-    goToProblem(0);
+    let target = 0;
+    if (resumeTarget !== null) {
+      target = resumeTarget;
+      setResumeTarget(null);
+    } else if (user) {
+      target = Math.max(0, firstUnsolvedIndex(activeSetIndex, activeChapterIndex, userProgress));
+      // Save resume state when switching chapters
+      const puzzle = puzzleSets[activeSetIndex].chapters[activeChapterIndex].puzzles[target];
+      if (puzzle) {
+        saveResumeState(user.uid, puzzleSets[activeSetIndex].id, activeChapterIndex, puzzle.puzzle_id);
+      }
+    }
+    goToProblem(target);
   }, [activeSetIndex, activeChapterIndex]);
 
   // When puzzle index changes via navigation (arrows, go button, auto-advance)
@@ -116,11 +161,25 @@ function App() {
       if (nextMoveIndex >= correctMoves.length) {
         setResultText('Puzzle Solved! Good job!');
         const puzzle = puzzlesInChapter[currentProblemIndex];
+        const nextIndex = (currentProblemIndex + 1) % numberOfPuzzles;
+        const nextPuzzle = puzzlesInChapter[nextIndex];
         setTimeout(() => {
           if (user) {
             saveUserProgress(user.uid, activeSet.id, puzzle.puzzle_id);
+            // Update local progress state so chapter-switching uses fresh data
+            setUserProgress((prev) => ({
+              ...prev,
+              [activeSet.id]: {
+                ...(prev[activeSet.id] || {}),
+                [puzzle.puzzle_id]: { solved: true },
+              },
+            }));
+            // Update resume to the next puzzle
+            if (nextPuzzle) {
+              saveResumeState(user.uid, activeSet.id, activeChapterIndex, nextPuzzle.puzzle_id);
+            }
           }
-          setCurrentProblemIndex((currentProblemIndex + 1) % numberOfPuzzles);
+          setCurrentProblemIndex(nextIndex);
         }, 500);
         return true;
       }
