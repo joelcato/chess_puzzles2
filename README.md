@@ -9,8 +9,8 @@ A web app for working through chess puzzle sets, with progress tracking and cros
 ## Features
 
 - **Two puzzle sets included:**
-  - *Polgar 5334* — 5,334 puzzles organized into chapters (mate in 1, 2, 3, etc.), numbered by their book position
-  - *Lichess Mating Patterns* — curated mating pattern puzzles sourced from Lichess, organized by theme and rating band
+  - *Polgar 5334* — 4,462 mate puzzles (positions 1–4462) from the book, organized into chapters (mate in 1, 2, 3, etc.), numbered by their book position. The remaining positions in the book (miniature games, endgames, and Polgar sisters tournament games) are not included.
+  - *Lichess Mating Patterns* — curated mating pattern puzzles sourced from Lichess, organized by theme and rating bands
 
 - **Puzzle solving**
   - Interactive chessboard powered by [react-chessboard](https://github.com/Clariity/react-chessboard) and [chess.js](https://github.com/jhlywa/chess.js)
