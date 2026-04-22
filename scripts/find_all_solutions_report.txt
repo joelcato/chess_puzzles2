@@ -1,0 +1,596 @@
+CHESS PUZZLE SOLUTION ANALYSIS REPORT
+============================================================
+Files processed: polgar.json
+
+Cooked puzzles (multiple solutions): 165
+Faster mate than indicated:          1
+Warnings (no forced mate found):     0
+
+============================================================
+  polgar.json
+============================================================
+
+  COOKED PUZZLES
+  ────────────────────────────────────────────────────────
+
+  6 solutions (7 puzzles):
+    #   313  mate in 2  branches at: player move 1, player move 2  *** MULTI-BRANCH ***
+             solution 1: g5f7 h8h7 b1d3
+             solution 2: h5f6 d3d2 g5f7
+             solution 3: h5f4 d3d2 g5f7
+             solution 4: h5f4 d3d2 f4g6
+             solution 5: h5g7 d3d2 g5f7
+             solution 6: h5g3 d3d2 g5f7
+    #  1074  mate in 2  branches at: player move 1, player move 2  *** MULTI-BRANCH ***
+             solution 1: h5g6 g7h8 g6h7
+             solution 2: h5g6 g7h8 g6h6
+             solution 3: h5g6 g7h8 h2g3
+             solution 4: h5g5 g7h8 g5h6
+             solution 5: h5g5 g7h8 h2g3
+             solution 6: h5h7 g7f6 e5g4
+    #  1942  mate in 4  branches at: player move 1, player move 2, player move 4  *** MULTI-BRANCH ***
+             solution 1: b7b1 e8d8 c7g7 d8e8 b1f1 e8d8 f1f8
+             solution 2: c7e7 e8d8 g8f8 d8c8 f8e8 a8a7 e7c7
+             solution 3: c7e7 e8d8 e7g7 d8c8 b7f7 c8d8 f7f8
+             solution 4: c7e7 e8d8 g8f7 d8c8 f7e8 a8a7 e7c7
+             solution 5: g8h7 e8d8 c7g7 d8c8 b7f7 c8d8 g7g8
+             solution 6: g8h7 e8d8 c7g7 d8c8 b7f7 c8d8 f7f8
+    #  4090  mate in 3  branches at: player move 3
+             solution 1: d1d5 f8d6 d5d6 d8c8 c5a7
+             solution 2: d1d5 f8d6 d5d6 d8c8 c5b6
+             solution 3: d1d5 f8d6 d5d6 d8c8 c5d4
+             solution 4: d1d5 f8d6 d5d6 d8c8 c5b4
+             solution 5: d1d5 f8d6 d5d6 d8c8 c5e3
+             solution 6: d1d5 f8d6 d5d6 d8c8 c5a3
+    #  4156  mate in 3  branches at: player move 1, player move 2, player move 3  *** MULTI-BRANCH ***
+             solution 1: f3f2 e7e4 g3g1 f1g1 c1g1
+             solution 2: f3f2 e7e4 g3g1 f1g1 f2g1q
+             solution 3: f3f2 e7e4 g3g1 f1g1 f2g1r
+             solution 4: f3f2 e7e4 c1f1 h2f1 g3g1
+             solution 5: c1f1 h2f1 f3f2 e7e4 g3g1
+             solution 6: c1f1 h2f1 f6h6 e7h4 f3f2
+    #  4382  mate in 3  branches at: player move 2, player move 3  *** MULTI-BRANCH ***
+             solution 1: f6e7 d6c7 d7d5 c7c8 e7d7
+             solution 2: f6e7 d6c7 d7d5 c7c8 e8g8
+             solution 3: f6e7 d6c7 d7d6 c7c8 b8c6
+             solution 4: f6e7 d6c7 d7d6 c7c8 b8a6
+             solution 5: f6e7 d6c7 d7d6 c7c8 e7d7
+             solution 6: f6e7 d6c7 d7d6 c7c8 e8g8
+    #  4423  mate in 3  branches at: player move 3
+             solution 1: h4f4 e3f4 g7h6 f4f5 d7f8
+             solution 2: h4f4 e3f4 g7h6 f4f5 d7b8
+             solution 3: h4f4 e3f4 g7h6 f4f5 d7f6
+             solution 4: h4f4 e3f4 g7h6 f4f5 d7b6
+             solution 5: h4f4 e3f4 g7h6 f4f5 d7e5
+             solution 6: h4f4 e3f4 g7h6 f4f5 d7c5
+
+  5 solutions (3 puzzles):
+    #  2725  mate in 2  branches at: player move 1
+             solution 1: a1b1 h3h2 f1f2
+             solution 2: a1c1 h3h2 f1f2
+             solution 3: a1d1 h3h2 f1f2
+             solution 4: a1e1 h3h2 f1f2
+             solution 5: f1f2 h1h2 f2f3
+    #  4200  mate in 3  branches at: player move 3
+             solution 1: e3g4 h1g2 e5h2 g2f1 g4e3
+             solution 2: e3g4 h1g2 e5h2 g2f1 h2h3
+             solution 3: e3g4 h1g2 e5h2 g2f1 h2f2
+             solution 4: e3g4 h1g2 e5h2 g2f1 h2h1
+             solution 5: e3g4 h1g2 e5h2 g2f1 h2g1
+    #  4214  mate in 3  branches at: player move 3
+             solution 1: c8h3 e1d1 c6g2 f1e1 g2g3
+             solution 2: c8h3 e1d1 c6g2 f1e1 g2f2
+             solution 3: c8h3 e1d1 c6g2 f1e1 g2h1
+             solution 4: c8h3 e1d1 c6g2 f1e1 g2g1
+             solution 5: c8h3 e1d1 c6g2 f1e1 g2f1
+
+  4 solutions (8 puzzles):
+    #   411  mate in 2  branches at: player move 1, player move 2  *** MULTI-BRANCH ***
+             solution 1: c3c4 d5c5 f2d3
+             solution 2: f2d3 f3f2 c3c4
+             solution 3: f2e4 f3f2 f6d6
+             solution 4: f2e4 f3f2 c3c4
+    #  1226  mate in 2  branches at: player move 2
+             solution 1: d5f6 g7f6 g5f6
+             solution 2: d5f6 g7f6 g5f4
+             solution 3: d5f6 g7f6 g5e3
+             solution 4: d5f6 g7f6 g5d2
+    #  1560  mate in 2  branches at: player move 2
+             solution 1: b7b8n c6b6 d7b7
+             solution 2: b7b8n c6b6 d6c8
+             solution 3: b7b8n c6b6 d6c4
+             solution 4: b7b8n c6b6 h5b5
+    #  2348  mate in 2  branches at: player move 1, player move 2  *** MULTI-BRANCH ***
+             solution 1: f4c4 d7d6 e7e8q
+             solution 2: f4e5 f7f6 e7e8q
+             solution 3: f4f7 d7c7 e7e8q
+             solution 4: f4f7 d7c7 e7e8r
+    #  2406  mate in 2  branches at: player move 1
+             solution 1: h2d2 e4e5 d2e3
+             solution 2: h2g3 e4d4 g3f4
+             solution 3: h2f2 e4e5 f2e3
+             solution 4: h2g1 e4e5 g1e3
+    #  2548  mate in 2  branches at: player move 1
+             solution 1: e7h4 h8g8 c2c8
+             solution 2: e7g5 h8g8 c2c8
+             solution 3: e7f6 h8g8 c2c8
+             solution 4: e7f8 h8g8 c2c8
+    #  4194  mate in 3  branches at: player move 2, player move 3  *** MULTI-BRANCH ***
+             solution 1: f6b2 b1b2 f2f1q a1a2 b3b2
+             solution 2: f6b2 b1b2 f2f1q a1a2 d2b2
+             solution 3: f6b2 b1b2 f2f1r a1a2 b3b2
+             solution 4: f6b2 b1b2 f2f1r a1a2 d2b2
+    #  4441  mate in 3  branches at: player move 3
+             solution 1: c8h3 a3b5 e4g2 f1e1 g2f2
+             solution 2: c8h3 a3b5 e4g2 f1e1 g2h1
+             solution 3: c8h3 a3b5 e4g2 f1e1 g2g1
+             solution 4: c8h3 a3b5 e4g2 f1e1 g2f1
+
+  3 solutions (20 puzzles):
+    #   659  mate in 2  branches at: player move 1, player move 2  *** MULTI-BRANCH ***
+             solution 1: f4g6 h7g6 e5g6
+             solution 2: f4g6 h7g6 f1f7
+             solution 3: e5g6 h7g6 f4g6
+    #   947  mate in 2  branches at: player move 1
+             solution 1: h5f7 g8f7 g7h8n
+             solution 2: g7f8q g8f8 c1h6
+             solution 3: g7f8r g8f8 c1h6
+    #  1085  mate in 2  branches at: player move 2
+             solution 1: g4h5 g6f5 h5g6
+             solution 2: g4h5 g6f5 b5d6
+             solution 3: g4h5 g6f5 b5d4
+    #  1359  mate in 2  branches at: player move 2
+             solution 1: c5c4 d3e4 f2f5
+             solution 2: c5c4 d3e4 f2e3
+             solution 3: c5c4 d3e4 f7f5
+    #  1370  mate in 2  branches at: player move 1
+             solution 1: e3f4 e1f2 e5e3
+             solution 2: e5d6 h1g1 d6d1
+             solution 3: e5d5 h1g1 d5d1
+    #  2560  mate in 2  branches at: player move 1
+             solution 1: a3f8 e5d5 g6e4
+             solution 2: a3e7 e5d5 g6e4
+             solution 3: a3b4 e5d5 g6e4
+    #  3496  mate in 2  branches at: player move 1
+             solution 1: b7a7 h8g8 b4b8
+             solution 2: b7g7 h8g8 b4b8
+             solution 3: b4a4 h8g8 a4a8
+    #  3649  mate in 2  branches at: player move 2
+             solution 1: a7a4 b4a4 f5f4
+             solution 2: a7a4 b4a4 f5e4
+             solution 3: a7a4 b4a4 c5c4
+    #  3730  mate in 3  branches at: player move 3
+             solution 1: g5e6 g7g8 h4g5 g8h7 f6f7
+             solution 2: g5e6 g7g8 h4g5 g8h7 f6h6
+             solution 3: g5e6 g7g8 h4g5 g8h7 g5g7
+    #  3735  mate in 3  branches at: player move 2
+             solution 1: g6g7 h7g7 g5h6 g7h7 h6h7
+             solution 2: g6g7 h7g7 g5h4 g7h7 h4h7
+             solution 3: g6g7 h7g7 g5h5 g7h7 h5h7
+    #  3869  mate in 3  branches at: player move 3
+             solution 1: d1d8 f8g7 d8f6 g7f8 f6h8
+             solution 2: d1d8 f8g7 d8f6 g7f8 f6f7
+             solution 3: d1d8 f8g7 d8f6 g7f8 e1e8
+    #  3872  mate in 3  branches at: player move 1, player move 3  *** MULTI-BRANCH ***
+             solution 1: d6d4 a8f8 d4e4 f8f4 e4f4
+             solution 2: d6d4 a8f8 d4e4 f8f4 f2f3
+             solution 3: d6e6 a8h8 e6e5 h8f8 e5g5
+    #  3886  mate in 3  branches at: player move 1, player move 2  *** MULTI-BRANCH ***
+             solution 1: d1d8 c6d8 b5c7 e8f8 a4e8
+             solution 2: d1d8 c6d8 b5d6 e8f8 a4e8
+             solution 3: b5c7 e8f8 d1d8 c6d8 a4e8
+    #  4005  mate in 3  branches at: player move 1, player move 3  *** MULTI-BRANCH ***
+             solution 1: d5f6 a8e8 f6d7 f8g8 e7e8
+             solution 2: d5f6 a8e8 f6d7 f8g8 c4f7
+             solution 3: d5c7 f8g8 e7e8 a8e8 e1e8
+    #  4114  mate in 3  branches at: player move 1
+             solution 1: a3a4 a6a4 c2a3 a4a3 d2c2
+             solution 2: d2d4 e4d4 b3d2 d4d2 a3c3
+             solution 3: c2e3 f5e3 d2c2 e3c2 b3d2
+    #  4128  mate in 3  branches at: player move 3
+             solution 1: e5d5 c5c6 d5d6 c6c5 g7g5
+             solution 2: e5d5 c5c6 d5d6 c6c5 g7e5
+             solution 3: e5d5 c5c6 d5d6 c6c5 g7d4
+    #  4203  mate in 3  branches at: player move 3
+             solution 1: c2h2 h3h2 c7g3 h2h1 g3h4
+             solution 2: c2h2 h3h2 c7g3 h2h1 g3h3
+             solution 3: c2h2 h3h2 c7g3 h2h1 g3g1
+    #  4220  mate in 3  branches at: player move 3
+             solution 1: f2e1 h3f1 e1f1 f3g1 g8g1
+             solution 2: f2e1 h3f1 e1f1 f3g1 f1g2
+             solution 3: f2e1 h3f1 e1f1 f3g1 f1g1
+    #  4308  mate in 3  branches at: player move 3
+             solution 1: e5d4 g1g2 c2e4 g2g3 e4f3
+             solution 2: e5d4 g1g2 c2e4 g2g3 d4f2
+             solution 3: e5d4 g1g2 c2e4 g2g3 h5h4
+    #  4355  mate in 3  branches at: player move 2, player move 3  *** MULTI-BRANCH ***
+             solution 1: f6h5 f4e4 c8b7 e4d3 d4f2
+             solution 2: f6h5 f4e4 c8b7 e4d3 d4g1
+             solution 3: f6h5 f4e4 f7f5 h4f5 c8f5
+
+  2 solutions (127 puzzles):
+    #    71  mate in 1  branches at: player move 1
+             solution 1: f7h6
+             solution 2: f7e5
+    #   122  mate in 1  branches at: player move 1
+             solution 1: h3h7
+             solution 2: h3e6
+    #   154  mate in 1  branches at: player move 1
+             solution 1: d4g7
+             solution 2: d4a7
+    #   220  mate in 1  branches at: player move 1
+             solution 1: e7d8q
+             solution 2: e7d8r
+    #   261  mate in 1  branches at: player move 1
+             solution 1: d7d8q
+             solution 2: d7d8r
+    #   315  mate in 2  branches at: player move 2
+             solution 1: a2b3 c2b1 e3g1
+             solution 2: a2b3 c2b1 e3e1
+    #   484  mate in 2  branches at: player move 1
+             solution 1: b7b8q d7b8 d5d8
+             solution 2: b7b8r d7b8 d5d8
+    #   530  mate in 2  branches at: player move 1
+             solution 1: d7d4 e5d4 f7f4
+             solution 2: f7f4 e5f4 d7d4
+    #   601  mate in 2  branches at: player move 2
+             solution 1: h5g5 h6g5 h4g5
+             solution 2: h5g5 h6g5 f4g5
+    #   606  mate in 2  branches at: player move 1
+             solution 1: e5e2 d6e4 g1h2
+             solution 2: d5f4 h7g6 f4e2
+    #   612  mate in 2  branches at: player move 1
+             solution 1: e2h5 g7g6 h5g6
+             solution 2: b3e6 f8e7 e6e7
+    #   615  mate in 2  branches at: player move 2
+             solution 1: g6g7 f7f6 e1c3
+             solution 2: g6g7 f7f6 e1a1
+    #   632  mate in 2  branches at: player move 1
+             solution 1: a4b4 e6c4 c2c3
+             solution 2: c2c3 d4c3 c7e5
+    #   652  mate in 2  branches at: player move 1
+             solution 1: f4g6 f7g6 h6g7
+             solution 2: f4d5 e7f8 h6h8
+    #   690  mate in 2  branches at: player move 2
+             solution 1: d5d8 c8d8 f7f8
+             solution 2: d5d8 c8d8 f7e8
+    #   715  mate in 2  branches at: player move 1
+             solution 1: f6f8 e8f8 d8f8
+             solution 2: d8e8 c6e8 f6f8
+    #   731  mate in 2  branches at: player move 1
+             solution 1: c2c5 d4c5 f4e6
+             solution 2: a4b4 d4e3 c2c3
+    #   745  mate in 2  branches at: player move 1
+             solution 1: b2d1 e8h8 h4f2
+             solution 2: h3c8 e8h8 h4h1
+    #   790  mate in 2  branches at: player move 2
+             solution 1: b4f8 g8f8 b7b8
+             solution 2: b4f8 g8f8 a7a8
+    #   837  mate in 2  branches at: player move 1
+             solution 1: h6h7 f6h7 c2h7
+             solution 2: e5f6 d8f6 h6h7
+    #   841  mate in 2  branches at: player move 2
+             solution 1: g7g8 f8g8 f6h8
+             solution 2: g7g8 f8g8 f6g7
+    #   893  mate in 2  branches at: player move 2
+             solution 1: b5g5 f4g5 d2g5
+             solution 2: b5g5 f4g5 h4g5
+    #   994  mate in 2  branches at: player move 1
+             solution 1: d2d4 e4d4 a5c5
+             solution 2: d2c3 d4c3 a5c5
+    #   995  mate in 2  branches at: player move 1
+             solution 1: e7h7 h8h7 d7h7
+             solution 2: e7f8 h8f8 d7h7
+    #  1040  mate in 2  branches at: player move 2
+             solution 1: f7d7 f6d7 e5f7
+             solution 2: f7d7 f6d7 e5c6
+    #  1097  mate in 2  branches at: player move 2
+             solution 1: g2e4 g6f5 f8g7
+             solution 2: g2e4 g6f5 f7g7
+    #  1183  mate in 2  branches at: player move 1
+             solution 1: d5f6 g7f6 g4f6
+             solution 2: g4f6 g7f6 d5f6
+    #  1184  mate in 2  branches at: player move 2
+             solution 1: h6g5 g6g5 h7f7
+             solution 2: h6g5 g6g5 h5f7
+    #  1251  mate in 2  branches at: player move 1
+             solution 1: e4c5 b6c5 b3c5
+             solution 2: b3c5 b6c5 e4c5
+    #  1266  mate in 2  branches at: player move 2
+             solution 1: f6d4 g1h1 f8f1
+             solution 2: f6d4 g1h1 e1f1
+    #  1268  mate in 2  branches at: player move 2
+             solution 1: h7d3 e3d3 h2h1q
+             solution 2: h7d3 e3d3 h2h1r
+    #  1296  mate in 2  branches at: player move 1
+             solution 1: e6f4 h3g3 g1g2
+             solution 2: d3f3 g2f3 e6f4
+    #  1333  mate in 2  branches at: player move 2
+             solution 1: g6g1 f1g1 h2g1q
+             solution 2: g6g1 f1g1 h2g1r
+    #  1345  mate in 2  branches at: player move 2
+             solution 1: g7g3 f4g3 c7g3
+             solution 2: g7g3 f4g3 h4g3
+    #  1358  mate in 2  branches at: player move 2
+             solution 1: a4a1 b3a1 b2a1q
+             solution 2: a4a1 b3a1 b2a1r
+    #  1395  mate in 2  branches at: player move 1
+             solution 1: g6g5 f3f4 h2h5
+             solution 2: h8h4 g3h4 h2h4
+    #  1419  mate in 2  branches at: player move 2
+             solution 1: d8d1 b3d1 e2d1q
+             solution 2: d8d1 b3d1 e2d1r
+    #  1420  mate in 2  branches at: player move 2
+             solution 1: h5h4 g3g4 d7d6
+             solution 2: h5h4 g3g4 d7d5
+    #  1470  mate in 2  branches at: player move 2
+             solution 1: h7c2 d1c2 d2d1q
+             solution 2: h7c2 d1c2 d2d1b
+    #  1623  mate in 2  branches at: player move 1
+             solution 1: e2e3 g2f3 e1g1
+             solution 2: e4e5 g2g3 e5g5
+    #  1793  mate in 2  branches at: player move 2
+             solution 1: e4g5 f7f8 d7d8q
+             solution 2: e4g5 f7f8 d7d8r
+    #  2390  mate in 2  branches at: player move 2
+             solution 1: f6e6 h8g7 h7h8q
+             solution 2: f6e6 h8g7 h7h8r
+    #  2432  mate in 2  branches at: player move 1
+             solution 1: d1a1 b2a3 f4b4
+             solution 2: f4e3 a2c1 e3c1
+    #  2520  mate in 2  branches at: player move 1
+             solution 1: f1d3 b8c6 g6g7
+             solution 2: f6g5 h8g7 f1f6
+    #  2705  mate in 2  branches at: player move 2
+             solution 1: f4f5 h5h6 h7g8
+             solution 2: f4f5 h5h6 h7g6
+    #  2771  mate in 2  branches at: player move 2
+             solution 1: a1b1 e2e3 b1d3
+             solution 2: a1b1 e2e3 b1e1
+    #  2875  mate in 2  branches at: player move 1
+             solution 1: c8c2 d4e4 c2d3
+             solution 2: c8c7 d4e4 c7f4
+    #  2978  mate in 2  branches at: player move 2
+             solution 1: d1e1 d5d4 g6d6
+             solution 2: d1e1 d5d4 g6e4
+    #  3015  mate in 2  branches at: player move 1
+             solution 1: f2f3 h5g7 e3g2
+             solution 2: h2g2 h3f2 e3f5
+    #  3048  mate in 2  branches at: player move 2
+             solution 1: h5h7 e7f6 g7g8q
+             solution 2: h5h7 e7f6 g7g8r
+    #  3050  mate in 2  branches at: player move 2
+             solution 1: d7d8n f7f8 h7h8q
+             solution 2: d7d8n f7f8 h7h8r
+    #  3061  mate in 2  branches at: player move 1
+             solution 1: g7f7 g5f5 h1d5
+             solution 2: h1c6 g5h5 c6g6
+    #  3162  mate in 2  branches at: player move 2
+             solution 1: e3e4 f6e5 g7f7
+             solution 2: e3e4 f6e5 g7g4
+    #  3240  mate in 2  branches at: player move 2
+             solution 1: g6g7 d5e6 g7g8q
+             solution 2: g6g7 d5e6 g7g8b
+    #  3253  mate in 2  branches at: player move 2
+             solution 1: d3c4 e6e5 b7e7
+             solution 2: d3c4 e6e5 b7d5
+    #  3274  mate in 2  branches at: player move 2
+             solution 1: g6g7 f6f7 h6g6
+             solution 2: g6g7 f6f7 g7g8q
+    #  3283  mate in 2  branches at: player move 2
+             solution 1: h6h7 h5h6 h7h8q
+             solution 2: h6h7 h5h6 h7h8r
+    #  3301  mate in 2  branches at: player move 2
+             solution 1: h8g7 f5g7 h7h8q
+             solution 2: h8g7 f5g7 h7h8r
+    #  3460  mate in 2  branches at: player move 1
+             solution 1: g1b6 h8g8 b6b8
+             solution 2: g1b1 h8g8 b1b8
+    #  3516  mate in 2  branches at: player move 1
+             solution 1: a3b3 d5d6 b3e6
+             solution 2: h3e6 d5e4 f2f3
+    #  3575  mate in 2  branches at: player move 1
+             solution 1: d6c5 a7b8 b2e5
+             solution 2: b2a3 a7b6 a3a6
+    #  3654  mate in 2  branches at: player move 1
+             solution 1: c7d5 c3d5 g3e4
+             solution 2: g3e4 c3e4 c7d5
+    #  3661  mate in 2  branches at: player move 1
+             solution 1: f1f3 f7e7 f3d5
+             solution 2: f1d3 d4c5 d3d5
+    #  3681  mate in 2  branches at: player move 2
+             solution 1: d2c3 d4c3 c5e6
+             solution 2: d2c3 d4c3 c5b3
+    #  3699  mate in 2  branches at: player move 1
+             solution 1: f1d3 e4d3 g4f2
+             solution 2: g4f6 e7f6 h5f3
+    #  3716  mate in 2  branches at: player move 1
+             solution 1: a3c3 a5c3 b2b3
+             solution 2: a3a4 b5a4 c2a3
+    #  3721  mate in 3  branches at: player move 1
+             solution 1: c3d5 e6d5 e5g6 h7g6 f5e5
+             solution 2: e5g6 h7g6 c3d5 e6d5 f5e5
+    #  3726  mate in 3  branches at: player move 3
+             solution 1: d5e7 g8h8 h5h7 h8h7 c5h5
+             solution 2: d5e7 g8h8 h5h7 h8h7 a3h3
+    #  3746  mate in 3  branches at: player move 2
+             solution 1: f7g8 h8g8 d7d8q e3e8 d8e8
+             solution 2: f7g8 h8g8 d7d8r e3e8 d8e8
+    #  3754  mate in 3  branches at: player move 1
+             solution 1: b5c4 d8f8 h5g6 f8g7 g6g7
+             solution 2: d5f6 e7f6 h5d5 d7e6 d5e6
+    #  3788  mate in 3  branches at: player move 2
+             solution 1: d4g7 h8g7 f4g4 g7h8 e7f6
+             solution 2: d4g7 h8g7 h3g3 g7h8 e7f6
+    #  3790  mate in 3  branches at: player move 3
+             solution 1: e5c7 d7c7 d1d8 c7c8 d8c8
+             solution 2: e5c7 d7c7 d1d8 c7c8 c1c8
+    #  3796  mate in 3  branches at: player move 3
+             solution 1: e7b7 d6b6 b7b6 a3b5 b6b5
+             solution 2: e7b7 d6b6 b7b6 a3b5 g5b5
+    #  3806  mate in 3  branches at: player move 3
+             solution 1: g4e2 d3c2 d2d3 c2c1 e2d2
+             solution 2: g4e2 d3c2 d2d3 c2c1 e1g1
+    #  3826  mate in 3  branches at: player move 3
+             solution 1: f3e5 c6e5 b5e8 f7f8 e8g6
+             solution 2: f3e5 c6e5 b5e8 f7f8 e8h5
+    #  3828  mate in 3  branches at: player move 1
+             solution 1: g4g7 f8e8 h6f7 d8f7 h5h7
+             solution 2: h5f7 f8g8 f7f6 g8g7 f6g7
+    #  3835  mate in 3  branches at: player move 3
+             solution 1: d5e5 c8f8 e5f6 f8e8 f6h8
+             solution 2: d5e5 c8f8 e5f6 f8e8 h2h8
+    #  3844  mate in 3  branches at: player move 3
+             solution 1: h7h8 g8h8 f4f8 a8f8 e7f8q
+             solution 2: h7h8 g8h8 f4f8 a8f8 e7f8r
+    #  3853  mate in 3  branches at: player move 3
+             solution 1: h5g6 e7g6 e6f7 e8f8 f4g6
+             solution 2: h5g6 e7g6 e6f7 e8f8 f4e6
+    #  3870  mate in 3  branches at: player move 3
+             solution 1: a3f8 g8f8 d2d8 c6e8 d8e8
+             solution 2: a3f8 g8f8 d2d8 c6e8 e1e8
+    #  3921  mate in 3  branches at: player move 3
+             solution 1: d3h7 g8f8 h7h6 f8g8 h6h8
+             solution 2: d3h7 g8f8 h7h6 f8g8 h6g7
+    #  3926  mate in 3  branches at: player move 1
+             solution 1: h5g5 d8g5 e1e8 d6f8 e8f8
+             solution 2: e1e8 d6f8 h5g5 d8g5 e8f8
+    #  3928  mate in 3  branches at: player move 1
+             solution 1: d2h6 d7f8 g3g7 a8e8 g7g8
+             solution 2: g3g7 a8g8 d2h6 g8g7 h6g7
+    #  3931  mate in 3  branches at: player move 3
+             solution 1: c4c6 d8c7 c6d7 c8b8 d7c7
+             solution 2: c4c6 d8c7 c6d7 c8b8 d6c7
+    #  3932  mate in 3  branches at: player move 3
+             solution 1: d2h6 g8h8 f6g7 h8g8 d5e7
+             solution 2: d2h6 g8h8 f6g7 h8g8 d5f6
+    #  3969  mate in 3  branches at: player move 3
+             solution 1: g6f8 h7h8 f5h7 g7h7 f8g6
+             solution 2: g6f8 h7h8 f5h7 g7h7 e7h7
+    #  3980  mate in 3  branches at: player move 2
+             solution 1: d3h7 g8h7 g3h3 h7g8 h3h8
+             solution 2: d3h7 g8h7 g7g8q d8g8 g3h3
+    #  3981  mate in 3  branches at: player move 1
+             solution 1: h2h3 g4g3 d3e4 e8e4 f1f3
+             solution 2: d3e4 e8e4 h2h3 g4g3 f1f3
+    #  4000  mate in 3  branches at: player move 2
+             solution 1: h6h8 g8h8 g3h4 h8g8 h4h7
+             solution 2: h6h8 g8h8 g3h3 h8g8 h3h7
+    #  4030  mate in 3  branches at: player move 3
+             solution 1: e8f8 g8h7 g4f5 g7g6 f8h8
+             solution 2: e8f8 g8h7 g4f5 g7g6 f6h8
+    #  4057  mate in 3  branches at: player move 2
+             solution 1: d4c5 b4c5 e5f6 e7f8 h3h8
+             solution 2: d4c5 b4c5 g5f6 e7f8 h3h8
+    #  4061  mate in 3  branches at: player move 2
+             solution 1: f1f6 g7f6 c1h6 h8h6 h5h6
+             solution 2: f1f6 g7f6 h5h6 h8h6 c1h6
+    #  4062  mate in 3  branches at: player move 3
+             solution 1: g1g8 f8g8 h6h7 g8f8 h7h8q
+             solution 2: g1g8 f8g8 h6h7 g8f8 h7h8r
+    #  4076  mate in 3  branches at: player move 1
+             solution 1: f1e2 c8g4 g6e5 d6f7 e2g4
+             solution 2: g6e5 d6f7 f1e2 c8g4 e2g4
+    #  4092  mate in 3  branches at: player move 1
+             solution 1: f1f5 g6h8 g2g3 h4h3 e6f4
+             solution 2: f1f4 g6f4 g2g3 h4h3 e6f4
+    #  4095  mate in 3  branches at: player move 3
+             solution 1: d2h6 g7h6 f7f8q h8h7 f8h6
+             solution 2: d2h6 g7h6 f7f8q h8h7 h1h6
+    #  4105  mate in 3  branches at: player move 2
+             solution 1: h1h6 g7h6 d4c5 d7f6 c3f6
+             solution 2: h1h6 g7h6 d4d5 d7f6 c3f6
+    #  4117  mate in 3  branches at: player move 1
+             solution 1: g4e5 g8h7 e5f3 d8f7 g2g1
+             solution 2: g4h2 g8h7 h2f3 d8f7 g2g1
+    #  4122  mate in 3  branches at: player move 3
+             solution 1: g5e4 h7g5 e4f6 d7f6 e5g5
+             solution 2: g5e4 h7g5 e4f6 d7f6 g3g5
+    #  4144  mate in 3  branches at: player move 3
+             solution 1: h6h5 g4g5 f1f6 g5h5 f6g6
+             solution 2: h6h5 g4g5 f1f6 g5h5 f6f5
+    #  4147  mate in 3  branches at: player move 3
+             solution 1: h8h3 g2h3 g4f3 h1h2 f2g3
+             solution 2: h8h3 g2h3 g4f3 h1h2 f2g1
+    #  4192  mate in 3  branches at: player move 3
+             solution 1: c2c1 b1a2 f5b1 a2a1 d4b3
+             solution 2: c2c1 b1a2 f5b1 a2a1 d4c2
+    #  4197  mate in 3  branches at: player move 3
+             solution 1: e3e1 a2a1 e1f1 c1f1 h3g4
+             solution 2: e3e1 a2a1 e1f1 c1f1 h3g2
+    #  4210  mate in 3  branches at: player move 2
+             solution 1: a5d2 c1d2 e8e2 d2c3 e2c2
+             solution 2: a5d2 c1d2 e1e2 d2c3 e2c2
+    #  4213  mate in 3  branches at: player move 1
+             solution 1: h2h1q g2h1 g4h3 c5d7 g3g2
+             solution 2: h2h1r c5d7 h1h2 g2f1 h2f2
+    #  4222  mate in 3  branches at: player move 1
+             solution 1: e8e4 e1d1 c4b3 d2c2 c3c2
+             solution 2: c3c1 d2d1 e8e4 f4e4 d3d2
+    #  4256  mate in 3  branches at: player move 3
+             solution 1: b2a2 a1a2 h4c4 a2a3 c4a6
+             solution 2: b2a2 a1a2 h4c4 a2a3 c4a4
+    #  4257  mate in 3  branches at: player move 2
+             solution 1: e8e1 d3f1 e1f1 d1f1 d4f3
+             solution 2: e8e1 d3f1 e1d1 c3d1 d4f3
+    #  4276  mate in 3  branches at: player move 3
+             solution 1: d7d2 e3d2 f8f2 e4g2 g6g2
+             solution 2: d7d2 e3d2 f8f2 e4g2 f2g2
+    #  4293  mate in 3  branches at: player move 3
+             solution 1: e4d2 f4d2 e8e1 d2e1 f2e1q
+             solution 2: e4d2 f4d2 e8e1 d2e1 f2e1r
+    #  4299  mate in 3  branches at: player move 3
+             solution 1: f6g4 f2e2 h1g2 e2e1 d6g3
+             solution 2: f6g4 f2e2 h1g2 e2e1 g2f2
+    #  4314  mate in 3  branches at: player move 3
+             solution 1: d7h3 g1h3 h5f3 g2g1 f3h1
+             solution 2: d7h3 g1h3 h5f3 g2g1 f2h3
+    #  4318  mate in 3  branches at: player move 1
+             solution 1: e8e1 f2e1 b2b1 g5c1 b1c2
+             solution 2: b2b1 g5c1 e8e1 d1e1 b1c1
+    #  4320  mate in 3  branches at: player move 3
+             solution 1: e8b8 b3a3 f6b2 a3a4 b8b4
+             solution 2: e8b8 b3a3 f6b2 a3a4 d3c5
+    #  4326  mate in 3  branches at: player move 3
+             solution 1: b3d3 d4c5 b7b6 c5c6 f5d7
+             solution 2: b3d3 d4c5 b7b6 c5c6 d3d7
+    #  4345  mate in 3  branches at: player move 2
+             solution 1: d4e2 g1h1 e2g3 h1g1 e1f1
+             solution 2: d4e2 g1h1 e1f1 f2f1 e2g3
+    #  4350  mate in 3  branches at: player move 3
+             solution 1: b3g3 h2g3 h8h1 f2h1 f4h3
+             solution 2: b3g3 h2g3 h8h1 f2h1 c2g2
+    #  4360  mate in 3  branches at: player move 2
+             solution 1: e1g3 c3g3 h4g3 h2h1 e6e1
+             solution 2: e1g3 c3g3 f4g3 h2h1 e6e1
+    #  4374  mate in 3  branches at: player move 1
+             solution 1: g2g1r g3f2 h1f3 f2g1 f3g2
+             solution 2: g2g1q e3g1 h1f3 g3h4 f3f4
+    #  4375  mate in 3  branches at: player move 3
+             solution 1: d7b5 c4b5 d8d4 d3c4 c8c4
+             solution 2: d7b5 c4b5 d8d4 d3c4 d4c4
+    #  4399  mate in 3  branches at: player move 2
+             solution 1: d8h4 g2g3 d6g3 h2g3 h4g3
+             solution 2: d8h4 g2g3 h4g3 h2g3 d6g3
+    #  4404  mate in 3  branches at: player move 2
+             solution 1: d8h4 g2g3 d6g3 h2g3 h4g3
+             solution 2: d8h4 g2g3 h4g3 h2g3 d6g3
+    #  4417  mate in 3  branches at: player move 2
+             solution 1: e2f1 g1f1 c8c1 f1e2 b8b2
+             solution 2: e2f1 g1f1 b8b1 f1e2 c8c2
+    #  4430  mate in 3  branches at: player move 3
+             solution 1: h5f3 h1g1 f3f2 g1h1 f2h2
+             solution 2: h5f3 h1g1 f3f2 g1h1 f2e1
+    #  4447  mate in 3  branches at: player move 3
+             solution 1: c5f2 f1f2 h4f2 g1h1 f2f1
+             solution 2: c5f2 f1f2 h4f2 g1h1 f2e1
+    #  4451  mate in 3  branches at: player move 2
+             solution 1: f8f5 g5g4 h7h5 g4h3 f5f3
+             solution 2: f8f5 g5g4 f5e5 g4f4 a8f8
+    #  4461  mate in 3  branches at: player move 3
+             solution 1: h8h5 g4h5 b7g2 h3h4 e5f6
+             solution 2: h8h5 g4h5 b7g2 h3h4 e5g3
+
+  FASTER MATE THAN INDICATED IN FILE
+  ────────────────────────────────────────────────────────
+  #  4117  file says mate in 4, Stockfish says mate in 3

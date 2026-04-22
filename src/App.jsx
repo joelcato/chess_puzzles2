@@ -182,94 +182,104 @@ function App() {
   }, [activeSetIndex, activeChapterIndex]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function onDrop(sourceSquare, targetSquare, piece) {
-    const currentMove = correctMoves[correctMoveIndex];
-
-    if (!currentMove) {
+    if (correctMoves.length === 0) {
       setResultText('Invalid move. No further moves expected.');
       return false;
     }
 
-    const { from, to, promotion } = currentMove;
+    const droppedPromotion = piece[1]?.toLowerCase();
 
-    if (
-      sourceSquare === from &&
-      targetSquare === to &&
-      (!promotion || promotion === piece[1]?.toLowerCase())
-    ) {
-      const move = gameRef.current.move({
-        from: sourceSquare,
-        to: targetSquare,
-        promotion: promotion ?? piece[1]?.toLowerCase() ?? 'q',
-      });
+    // Find all active solutions that accept this player move
+    const matchingSolutions = correctMoves.filter((solution) => {
+      const m = solution[correctMoveIndex];
+      if (!m) return false;
+      return (
+        m.from === sourceSquare &&
+        m.to === targetSquare &&
+        (!m.promotion || m.promotion === droppedPromotion)
+      );
+    });
 
-      if (move === null) return false;
+    if (matchingSolutions.length === 0) {
+      setResultText('Sorry. Incorrect :(');
+      return false;
+    }
 
-      setGamePosition(gameRef.current.fen());
+    const { promotion } = matchingSolutions[0][correctMoveIndex];
 
-      const nextMoveIndex = correctMoveIndex + 1;
+    const move = gameRef.current.move({
+      from: sourceSquare,
+      to: targetSquare,
+      promotion: promotion ?? droppedPromotion ?? 'q',
+    });
 
-      if (nextMoveIndex >= correctMoves.length) {
-        const puzzle = puzzlesInChapter[currentProblemIndex];
-        const isLastInChapter = currentProblemIndex === numberOfPuzzles - 1;
-        const nextIndex = currentProblemIndex + 1;
+    if (move === null) return false;
 
-        if (isLastInChapter) {
-          setResultText('Chapter complete! 🎉 Moving to the next chapter...');
-          setTimeout(() => {
-            if (user) {
-              saveUserProgress(user.uid, activeSet.id, puzzle.puzzle_id);
-              setUserProgress((prev) => ({
-                ...prev,
-                [activeSet.id]: {
-                  ...(prev[activeSet.id] || {}),
-                  [puzzle.puzzle_id]: { solved: true },
-                },
-              }));
+    // Narrow active solutions to those matching the player's choice
+    setCorrectMoves(matchingSolutions);
+    setGamePosition(gameRef.current.fen());
+
+    const nextMoveIndex = correctMoveIndex + 1;
+    const solutionLength = matchingSolutions[0].length;
+
+    if (nextMoveIndex >= solutionLength) {
+      const puzzle = puzzlesInChapter[currentProblemIndex];
+      const isLastInChapter = currentProblemIndex === numberOfPuzzles - 1;
+      const nextIndex = currentProblemIndex + 1;
+
+      if (isLastInChapter) {
+        setResultText('Chapter complete! 🎉 Moving to the next chapter...');
+        setTimeout(() => {
+          if (user) {
+            saveUserProgress(user.uid, activeSet.id, puzzle.puzzle_id);
+            setUserProgress((prev) => ({
+              ...prev,
+              [activeSet.id]: {
+                ...(prev[activeSet.id] || {}),
+                [puzzle.puzzle_id]: { solved: true },
+              },
+            }));
+          }
+          const nextChapterIndex = activeChapterIndex + 1;
+          if (nextChapterIndex < activeSet.chapters.length) {
+            skipChapterEffect.current = true;
+            setActiveChapterIndex(nextChapterIndex);
+            goToProblem(0, puzzleSets, activeSetIndex, nextChapterIndex);
+          }
+        }, 1500);
+      } else {
+        setResultText('Puzzle Solved! Good job!');
+        const nextPuzzle = puzzlesInChapter[nextIndex];
+        setTimeout(() => {
+          if (user) {
+            saveUserProgress(user.uid, activeSet.id, puzzle.puzzle_id);
+            setUserProgress((prev) => ({
+              ...prev,
+              [activeSet.id]: {
+                ...(prev[activeSet.id] || {}),
+                [puzzle.puzzle_id]: { solved: true },
+              },
+            }));
+            if (nextPuzzle) {
+              saveResumeState(user.uid, activeSet.id, activeChapterIndex, nextPuzzle.puzzle_id);
             }
-            const nextChapterIndex = activeChapterIndex + 1;
-            if (nextChapterIndex < activeSet.chapters.length) {
-              skipChapterEffect.current = true;
-              setActiveChapterIndex(nextChapterIndex);
-              goToProblem(0, puzzleSets, activeSetIndex, nextChapterIndex);
-            }
-          }, 1500);
-        } else {
-          setResultText('Puzzle Solved! Good job!');
-          const nextPuzzle = puzzlesInChapter[nextIndex];
-          setTimeout(() => {
-            if (user) {
-              saveUserProgress(user.uid, activeSet.id, puzzle.puzzle_id);
-              setUserProgress((prev) => ({
-                ...prev,
-                [activeSet.id]: {
-                  ...(prev[activeSet.id] || {}),
-                  [puzzle.puzzle_id]: { solved: true },
-                },
-              }));
-              if (nextPuzzle) {
-                saveResumeState(user.uid, activeSet.id, activeChapterIndex, nextPuzzle.puzzle_id);
-              }
-            }
-            goToProblem(nextIndex);
-          }, 500);
-        }
-        return true;
+          }
+          goToProblem(nextIndex);
+        }, 500);
       }
+      return true;
+    }
 
-      setResultText('Good Move!');
+    setResultText('Good Move!');
 
       setTimeout(() => {
-        const computerMove = correctMoves[nextMoveIndex];
+        const computerMove = matchingSolutions[0][nextMoveIndex];
         gameRef.current.move(computerMove);
         setGamePosition(gameRef.current.fen());
         setCorrectMoveIndex(nextMoveIndex + 1);
       }, 300);
 
       return true;
-    } else {
-      setResultText('Sorry. Incorrect :(');
-      return false;
-    }
   }
 
   // ── Derived values for display ─────────────────────────────────────────────
